@@ -1,0 +1,33 @@
+
+<!DOCTYPE html> <!-- tell browsers this is HTML5 -->
+<html>
+    <head>
+        <Title>Open Python RPG</Title>
+    </head>
+    <body>
+        {% with messages = get_flashed_messages() %}
+        <div id="events">
+            {% if messages %}
+                {% for message in messages %}
+                    {{message}}<br>
+                {% endfor %}
+            {% else %}
+                Welcome to the start, you're in an empty room!
+
+                You can go in any direction from here.
+            {% endif %}
+        </div>
+        {% endwith %}
+        <div id="actions">
+            <form action="/do" method="post">
+                <fieldset>
+                    <legend>Go...</legend>
+                    <button name="go" value="north">North</button>
+                    <button name="go" value="south">South</button>
+                    <button name="go" value="west">West</button>
+                    <button name="go" value="east">East</button>
+                </fieldset>
+            </form>
+        </div>
+    </body>
+</html>
