@@ -20,7 +20,7 @@ This is a public property implementation of an RPG using Python.
 7. Update your virtualenv to use the requirements file `pip install -r requirements.txt`
 
 
-Now you should be able to cd into py_rpg, type `python main.py`, and then browse to
+Now you should be able to `cd py_rpg`, type `python main.py`, and then browse to
 http://127.0.0.1:5000
 
 Step 8. Add more features :)
