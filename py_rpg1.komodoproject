@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Komodo Project File - DO NOT EDIT -->
 <project id="06b2d532-ca82-413d-8e0f-81ab92651b98" kpf_version="5" name="py_rpg1.komodoproject">
+<preference-set idref="06b2d532-ca82-413d-8e0f-81ab92651b98" id="project" preftype="project">
+  <string relative="path" id="pythonDefaultInterpreter">env/Scripts/python.exe</string>
+</preference-set>
 </project>
