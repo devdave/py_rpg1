@@ -33,7 +33,7 @@ def test_reload_player():
 
     gamestate = type("GameState", (object,), {})
 
-    app.player = Player.Create_Rebuild({}, session )
+    player = Player.Create_Rebuild({}, session )
 
-    assert app.player.location_id == "room_2"
-    assert app.player.current_room.title == "Room2"
+    assert player.location_id == "room_2"
+
