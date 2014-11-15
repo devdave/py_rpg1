@@ -1,6 +1,6 @@
 from nose import with_setup
 
-@with_setup(setup_gamestate, teardown_gamestate)
+
 def test_create_new_player():
     new_session = {}
     global app
@@ -15,7 +15,7 @@ def test_create_new_player():
 
 
 
-@with_setup(setup_gamestate, teardown_gamestate)
+
 def test_save_player():
     global app
 
@@ -27,7 +27,7 @@ def test_save_player():
     assert 'player' in session
     assert 'location' in session['player']
 
-@with_setup(setup_gamestate, teardown_gamestate)
+
 def test_reload_player():
     global app
     session['player'] = {}
