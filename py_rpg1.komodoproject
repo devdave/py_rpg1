@@ -2,6 +2,8 @@
 <!-- Komodo Project File - DO NOT EDIT -->
 <project id="06b2d532-ca82-413d-8e0f-81ab92651b98" kpf_version="5" name="py_rpg1.komodoproject">
 <preference-set idref="06b2d532-ca82-413d-8e0f-81ab92651b98" id="project" preftype="project">
+  <boolean id="lint_python_with_pychecker">1</boolean>
+  <boolean id="lint_python_with_pylint">0</boolean>
   <string relative="path" id="pythonDefaultInterpreter">env/Scripts/python.exe</string>
 </preference-set>
 </project>
