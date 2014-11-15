@@ -1,0 +1,20 @@
+
+{
+    "room1": {
+        "title": "Room2",
+        "connections": {"east":"room2", south:"room3"},
+        "start_in": true //tell map where the entrance is!
+    },
+    "room2": {
+        "title": "Room2",
+        "connections": {west:"room1", south:"room4"}
+    },
+    "room3": {
+        "title": "Room3",
+        "connections": {east:"room4", north:"room2"}
+    },
+    "room4": {
+        "title": "Room4",
+        "connections": {west:"room3", north:"room2"}
+    },
+}
