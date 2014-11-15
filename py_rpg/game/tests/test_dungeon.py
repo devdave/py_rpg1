@@ -1,12 +1,13 @@
 
-#from nose
-from nose.util import eq_
+from nose import with_setup
+from nose.tools import eq_
+
 
 #stdlib
 import os
 
 #Application
-from py_rpg.game.room import Room
+from py_rpg.game.dungeon import Room
 from py_rpg.game.dungeon import Dungeon
 
 
@@ -17,9 +18,6 @@ DRN = os.path.dirname
 
 #Common data
 MAP_FILE = ABP(J(DRN(__file__), "map_data.json"))
-
-#global fixture data
-dungeon = None
 
 """
     These two functions are called by nose
@@ -33,39 +31,63 @@ dungeon = None
         no matter what.
 """
 
-def setup_test():
+
+
+
+"""
+    using nose's with_setup decorator
+
+    we're going to setup and then
+    teardown a fixture for each test
+    as needed.
+
+    Behind the scenes, nose does something like
+
+    setup_func()
+    test_something()
+    teardown_func()
+
+"""
+
+dungeon = None
+
+def setup_func():
     global dungeon
     dungeon = Dungeon(MAP_FILE)
-setup_test.__test__ = False  #These tell Nose that this is not a unit test function
 
-def teardown_test():
+#Tell Nose that this is not a unit test
+setup_func.__test__ = False
+
+def teardown_func():
     global dungeon
     dungeon = None
-teardown_test.__test__ = False
+
+#Tell Nose that this is not a unit test
+teardown_func.__test__ = False
 
 
 
 def test_instantiates():
-    assert hasattr(dungeon, "get")
-    assert hasattr(dungeon, "rooms")
-    assert hasattr(dungeon, "starting_location")
-
-    dungeon.starting_location = "Room1"
+    dungeon = Dungeon(MAP_FILE)
+    eq_(dungeon.starting_location, "room_1")
+    assert isinstance(dungeon.rooms, dict)
 
 
+@with_setup(setup_func, teardown_func)
 def test_get_room_returns_expected_value():
-    room = dungeon.get("room1")
-    assert isinstance(room, Room)
+    room = dungeon.get("room_1")
+    assert isinstance(room, Room), "Expecting a room, got {}".format(room)
 
+@with_setup(setup_func, teardown_func)
 def test_assert_dungeon_size_is_correct():
-    assert eq_(dungeon.rooms, 4)
+    eq_(len(dungeon.rooms), 4)
 
+@with_setup(setup_func, teardown_func)
 def test_assert_all_rooms_are_unique():
     unique_values = set()
     total_values = []
-    for room in dungeon.rooms:
-        unique_values.add(room.id)
-        total_values.append(room.id)
+    for room_id, _ignore in dungeon.rooms.items():
+        unique_values.add(room_id)
+        total_values.append(room_id)
 
-    assert eq_(len(unique_values), len(total_values))
-
+    eq_(len(unique_values), len(total_values))

@@ -1,39 +1,52 @@
-from nose import with_setup
-from py_rpg.game.player import Player
+import nose
+with_setup = nose.with_setup
+eq_ = nose.tools.eq_
 
+import os
+#shortcut aliases
+ABP = os.path.abspath
+J = os.path.join
+DRN = os.path.dirname
+
+from py_rpg.game.player import Player
 
 def test_create_new_player():
     new_session = {}
 
-    app.player = gamelib.Player.Create_Rebuild(self, app.gamestate, new_session)
-
-    assert hasattr(app.player, "location_id")
-    assert hasattr(app.player, "go")
-    assert hasattr(app.player, "current_room")
-
-    assert isinstance(app.player.current_room, gamelib.Room)
-
-def test_save_player():
+    player = Player.Create_Rebuild(new_session)
+    assert hasattr(player, "location_id")
 
 
-    app.player = gamelib.Player.Create_Rebuild(app.gamestate, {})
+def test_player_save():
+
+
+    player = Player.Create_Rebuild({})
 
     session = {}
-    app.player.save(session)
+    player.save(session)
 
     assert 'player' in session
-    assert 'location' in session['player']
+    assert 'location_id' in session['player']
+
+def test_player_load():
+    session = {}
+    session['player'] = {}
+    session['player']['location_id'] = "room_2"
+
+    player = Player()
+    player.load(session)
+    eq_(player.location_id, "room_2")
 
 
-def test_reload_player():
+
+def test_Create_Rebuild():
 
     session = {}
     session['player'] = {}
-    session['player']['location'] = "room_2"
+    session['player']['location_id'] = "room_2"
 
-    gamestate = type("GameState", (object,), {})
+    player = Player.Create_Rebuild(session)
 
-    player = Player.Create_Rebuild({}, session )
+    eq_(player.location_id, "room_2")
 
-    assert player.location_id == "room_2"
 

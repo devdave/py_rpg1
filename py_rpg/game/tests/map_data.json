@@ -1,20 +1,19 @@
-
 {
-    "room1": {
+    "room_1": {
         "title": "Room2",
-        "connections": {"east":"room2", south:"room3"},
-        "start_in": true //tell map where the entrance is!
+        "connections": {"east":"room_2", "south":"room_3"},
+        "start_in": true
     },
-    "room2": {
+    "room_2": {
         "title": "Room2",
-        "connections": {west:"room1", south:"room4"}
+        "connections": {"west":"room_1", "south":"room_4"}
     },
-    "room3": {
+    "room_3": {
         "title": "Room3",
-        "connections": {east:"room4", north:"room2"}
+        "connections": {"east": "room_4", "north": "room_2"}
     },
-    "room4": {
+    "room_4": {
         "title": "Room4",
-        "connections": {west:"room3", north:"room2"}
-    },
+        "connections": {"west": "room_3", "north": "room_2"}
+    }
 }
