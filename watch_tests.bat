@@ -1,4 +1,4 @@
 watchmedo shell-command ^
-    --patterns="*.py" ^
+    --patterns="*.py;*.json" ^
     --recursive ^
     --command "nosetests"
