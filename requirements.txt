@@ -1,0 +1,17 @@
+Flask==0.10.1
+Jinja2==2.7.3
+MarkupSafe==0.23
+PyYAML==3.11
+Werkzeug==0.9.6
+argh==0.26.1
+astroid==1.2.1
+colorama==0.3.2
+dbgp==1.1
+itsdangerous==0.24
+logilab-common==0.63.0
+nose==1.3.4
+pathtools==0.1.2
+pyflakes==0.8.1
+pylint==1.3.1
+six==1.8.0
+watchdog==0.8.2
