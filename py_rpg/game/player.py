@@ -4,6 +4,6 @@ class Player(object):
 
 
     @classmethod
-    def Create_Rebuild(self, ):
+    def Create_Rebuild(self, gamestate, session ):
         pass
 
