@@ -12,9 +12,8 @@ from py_rpg.game.player import Player
 
 def test_create_new_player():
     new_session = {}
-
     player = Player.Create_Rebuild(new_session)
-    assert hasattr(player, "location_id")
+
 
 
 def test_player_save():
@@ -25,8 +24,9 @@ def test_player_save():
     session = {}
     player.save(session)
 
-    assert 'player' in session
-    assert 'location_id' in session['player']
+    assert session.get('player', False)
+    assert session['player'].get('location_id', False) != False, str(session)
+
 
 def test_player_load():
     session = {}
@@ -50,3 +50,8 @@ def test_Create_Rebuild():
     eq_(player.location_id, "room_2")
 
 
+def test_player_save__works_with_and_without_player_in_session():
+    player = Player.Create_Rebuild({})
+    player.save({})
+
+    player.save({"player":{"location_id":"room_1"}})
