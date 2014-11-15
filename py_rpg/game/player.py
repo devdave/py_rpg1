@@ -1,4 +1,9 @@
 
 
 class Player(object):
-    pass
+
+
+    @classmethod
+    def Create_Rebuild(self, ):
+        pass
+
