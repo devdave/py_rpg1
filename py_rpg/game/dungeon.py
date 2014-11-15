@@ -1,0 +1,4 @@
+
+
+class Dungeon(object):
+    pass
