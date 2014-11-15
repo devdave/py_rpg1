@@ -1,9 +1,10 @@
 from nose import with_setup
+from py_rpg.game.player import Player
 
 
 def test_create_new_player():
     new_session = {}
-    global app
+
     app.player = gamelib.Player.Create_Rebuild(self, app.gamestate, new_session)
 
     assert hasattr(app.player, "location_id")
@@ -12,12 +13,8 @@ def test_create_new_player():
 
     assert isinstance(app.player.current_room, gamelib.Room)
 
-
-
-
-
 def test_save_player():
-    global app
+
 
     app.player = gamelib.Player.Create_Rebuild(app.gamestate, {})
 
@@ -29,11 +26,14 @@ def test_save_player():
 
 
 def test_reload_player():
-    global app
+
+    session = {}
     session['player'] = {}
     session['player']['location'] = "room_2"
 
-    app.player = gamelib.Player.create_Rebuild(app.gamestate, session )
+    gamestate = type("GameState", (object,), {})
+
+    app.player = Player.create_Rebuild({}, session )
 
     assert app.player.location_id == "room_2"
     assert app.player.current_room.title == "Room2"
