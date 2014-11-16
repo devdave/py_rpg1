@@ -35,12 +35,10 @@ from flask import g
 #Tell our flask app that the index|root path is handled by def home
 @app.route("/")
 def home():
-    if g.game.is_new:
-        flash("Welcome to Open PyRPG") #RPyG?  is that corny?  does it matter if it's corny?
-        #Perhaps better out of the view, but not sure where just yet?
-        g.game.location = app.game.ROOM1
-
-    return render_template("home.html")
+    return render_template("home.html",
+                        game = app.game,
+                        player = app.game.player,
+                        room = app.game.player.current_room)
 
 #similar to home, but also tell our app we accept HTTP post & get requests
 @app.route("/do", methods=['POST', 'GET'] )
@@ -50,18 +48,11 @@ def do():
         Currently check for the form name "go" and just tells the user
         what they clicked
     """
-    result = "Something went wrong in do()!"
-    if "go" in request.form:
-        result = app.game.RH.do_move(g.game, go = request.form['go'])
+    go_here = request.form.get("go", False)
+    if go_here != False:
+        app.game.move_player(request.form['go'])
     else:
         result = "Uh oh, you asked me to do something but I don't know what to do! {} ".format(\
         str(request.form)) #should use pretty print for this!
-
-    if isinstance(result, basestring):
-        flash(result)
-    else:
-        for msg in result:
-            flash(msg)
-
 
     return redirect(url_for("home"))
