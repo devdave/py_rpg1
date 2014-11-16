@@ -32,12 +32,18 @@ app.config.from_object(__name__)
 # user privacy.
 app.secret_key = 'some_secret'
 
-#This is our game, we setup our Game, add a dungeon, and tell it how to create
-# new players.
-# It's wrapped with a attribute check because of how Flask's development
-# reloader works ( it runs this twice! )
-if not hasattr(app, "game"):
 
+
+@app.before_first_request
+def setup_the_game():
+    """
+        This is the game in a nutshell,
+          Setup our Game state
+          add a default dungeon
+          tell GameState how to create new players.
+
+          before_first_request ensures this is only called once.
+    """
     app.game = GameState()
     app.game.set_dungeon(Dungeon(HERE(__file__, "maps/base_map.json")))
     app.game.set_player_class(Player)
