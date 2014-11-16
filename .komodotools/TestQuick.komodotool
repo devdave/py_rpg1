@@ -1,0 +1,18 @@
+{
+  "insertOutput": 0, 
+  "keyboard_shortcut": "", 
+  "name": "TestQuick", 
+  "parseRegex": "", 
+  "operateOnSelection": 0, 
+  "value": [
+    "%p\\test_quick.bat"
+  ], 
+  "parseOutput": 0, 
+  "version": "1.0.12", 
+  "env": "", 
+  "doNotOpenOutputWindow": 0, 
+  "showParsedOutputList": 0, 
+  "type": "command", 
+  "cwd": "%p", 
+  "runIn": "command-output-window"
+}
