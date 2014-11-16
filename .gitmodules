@@ -1,0 +1,3 @@
+[submodule "py_rpg/bootstrap"]
+	path = py_rpg/bootstrap
+	url = git@github.com:devdave/bootstrap-sass.git
