@@ -4,11 +4,6 @@
 """
 #Flask dependancy imports
 from flask import Flask
-#flask.g is a global data proxy, it's a way for objects to
-# jump the train tracks and allow for separate parts of the application
-# to share common data.  In this case, g is where the game state object is
-# being assigned to make it available to the rest of the app.
-from flask import g
 from flask import session
 
 #Our utility helpers
@@ -71,12 +66,13 @@ def after_request(response):
     """
         After views are done doing their work, this is called.
 
-        It's called a post-filter in some MVC architecture.  One of its uses is
-        to check output destined for the browser ( ie running html tidy, scrubbing for
-        specific words, or adding extra lines of code).  I, DevDave, frown on that
-        last bit as it gets confusing and or hard to debug.
+        It's called a post-filter in some MVC architecture. One of its uses is
+        to check output destined for the browser ( ie running html tidy,
+        scrubbing for specific words, or adding extra lines of code). I,
+        DevDave, frown on that last bit as it gets confusing and or hard to
+        debug.
 
-        In our case it allows us to do housekeeping, clean up work.  In this case
+        In our case it allows us to do housekeeping, clean up work. In this case
         it saves
     """
     app.game.save(session)
