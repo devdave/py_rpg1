@@ -72,6 +72,20 @@ def test_instantiates():
     eq_(dungeon.starting_location, "room_1")
     assert isinstance(dungeon.rooms, dict)
 
+@with_setup(setup_func, teardown_func)
+def test_room_direction_list():
+    room = dungeon.get("room_1")
+    actual_directions = room.direction_list()
+    expected_directions = ['east','south']
+
+    eq_(expected_directions, actual_directions)
+
+@with_setup(setup_func, teardown_func)
+def test_room__directions():
+    room = dungeon.get("room_1")
+    actual_directions = room.directions
+    expected_directions = "East, South"
+    eq_(expected_directions, actual_directions)
 
 @with_setup(setup_func, teardown_func)
 def test_get_room_returns_expected_value():
