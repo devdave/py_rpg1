@@ -9,28 +9,10 @@ import os
 from py_rpg.game.dungeon import Room
 from py_rpg.game.dungeon import Dungeon
 
-
-#shortcut aliases
-ABP = os.path.abspath
-J = os.path.join
-DRN = os.path.dirname
+from helpers import HERE
 
 #Common data
-MAP_FILE = ABP(J(DRN(__file__), "map_data.json"))
-
-"""
-    These two functions are called by nose
-    for every single test_ function in here
-
-    They instantiate the Dungeon class, assign it to the global
-       dungeon file, and then when a test is done, they set the global
-       to None.
-
-       The teardown is done so that each test won't interfere with the other
-        no matter what.
-"""
-
-
+MAP_FILE = HERE(__file__, "map_data.json")
 
 
 """
