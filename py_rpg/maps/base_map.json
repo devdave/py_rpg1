@@ -1,0 +1,19 @@
+{
+    "room_1": {
+        "title": "Room2",
+        "connections": {"east":"room_2", "south":"room_3"},
+        "start_in": true
+    },
+    "room_2": {
+        "title": "Room2",
+        "connections": {"west":"room_1", "south":"room_4"}
+    },
+    "room_3": {
+        "title": "Room3",
+        "connections": {"east": "room_4", "north": "room_2"}
+    },
+    "room_4": {
+        "title": "Room4",
+        "connections": {"west": "room_3", "north": "room_2"}
+    }
+}
