@@ -56,3 +56,4 @@ target/
 *.pyc
 py_rpg/app.pyc
 *.pyc
+*.komodotool
