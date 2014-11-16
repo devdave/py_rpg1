@@ -7,19 +7,22 @@
     <body>
 
         <div id="events">
-            <div>{{ room.title }}</div>
-            <div>{{ room.description }}</div>
-            <div>You can go: {{room.directions }}</div>
+            <div>You have entered: {{ room.title }}</div>
+            <div>You see: {{ room.description }}</div>
         </div>
-        {% endwith %}
         <div id="actions">
             <form action="/do" method="post">
                 <fieldset>
-                    <legend>Go...</legend>
-                    <button name="go" value="north">North</button>
-                    <button name="go" value="south">South</button>
-                    <button name="go" value="west">West</button>
-                    <button name="go" value="east">East</button>
+                    <legend>You can go...</legend>
+                    {% set my_dirs = room.direction_list() %}
+                    {% for dir in ['up', 'north','down'] %}
+                    <button {% if dir not in my_dirs %}disabled=true{% endif %} name="go" value="{{dir}}">{{dir|capitalize}}</button>
+                    {% endfor %}
+                    <br>
+                    {% for dir in ['west', 'south', 'east'] %}
+                    <button {% if dir not in my_dirs %}disabled=true{% endif %} name="go" value="{{dir}}">{{dir|capitalize}}</button>
+                    {% endfor %}
+
                 </fieldset>
             </form>
         </div>
