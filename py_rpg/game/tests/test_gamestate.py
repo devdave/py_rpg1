@@ -20,6 +20,9 @@ def my_app():
     """
         Simulates how py_rpg.app behaves
 
+        This tries to replicate how our application would
+        build a new game.
+
     """
     global gamestate
     gamestate = GameState()
