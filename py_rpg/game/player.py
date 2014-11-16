@@ -1,4 +1,5 @@
 
+import inspect
 
 class Player(object):
     """
@@ -26,6 +27,13 @@ class Player(object):
 
     @current_dungeon.setter
     def current_dungeon(self, dungeon):
+
+
+        #during development, ensure we're getting the input we want
+        assert hasattr(dungeon, "starting_location")
+        assert hasattr(dungeon, "get") and inspect.ismethod(dungeon.get)
+
+
         self.dungeon = dungeon
         if self.location_id:
             self.room = self.dungeon.get(self.location_id)
@@ -71,4 +79,3 @@ class Player(object):
 
         for varname in ['location_id']:
             session['player'][varname] = getattr(self, varname)
-
