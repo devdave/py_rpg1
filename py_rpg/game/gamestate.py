@@ -28,9 +28,6 @@ class GameState(object):
 
 
     def restore(self, session):
-        if self.player is not None:
-            raise ValueError("Gamestate has already been restored for this request!")
-
         self.player = self.player_cls.Create_Rebuild(session)
         self.player.current_dungeon = self.dungeon
 
@@ -55,4 +52,3 @@ class GameState(object):
         new_room = self.player.current_room.get(direction)
         self.player.location_id = new_room.id
         return new_room
-
