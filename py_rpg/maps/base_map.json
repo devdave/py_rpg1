@@ -2,18 +2,28 @@
     "room_1": {
         "title": "Room1",
         "connections": {"east":"room_2", "south":"room_3"},
-        "start_in": true
+        "start_in": true,
+        "description": "You're in the north west corner of a square maze"
     },
     "room_2": {
         "title": "Room2",
-        "connections": {"west":"room_1", "south":"room_4"}
+        "connections": {"west":"room_1", "south":"room_4"},
+        "description": "You're in the north east corner of a square maze"
     },
     "room_3": {
         "title": "Room3",
-        "connections": {"east": "room_4", "north": "room_2"}
+        "connections": {"east": "room_4", "north": "room_2"},
+        "description": "You're in the south west corner of a square maze"
     },
     "room_4": {
         "title": "Room4",
-        "connections": {"west": "room_3", "north": "room_2"}
+        "connections": {"west": "room_3", "north": "room_2", "down":"room_5"},
+        "description": "You're in the south east corner of a square maze"
+    },
+    "room_5": {
+        "title": "A strange tunnel",
+        "connections": {"south": "room_1"},
+        "description": "You are in a tunnel, you can't see how you got here but you can go south towards a light"
     }
+
 }
