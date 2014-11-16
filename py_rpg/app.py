@@ -34,9 +34,13 @@ app.secret_key = 'some_secret'
 
 #This is our game, we setup our Game, add a dungeon, and tell it how to create
 # new players.
-app.game = GameState()
-app.game.set_dungeon(HERE(__file__, "data/basic_map.json"))
-app.game.set_player_class(Player)
+# It's wrapped with a attribute check because of how Flask's development
+# reloader works ( it runs this twice! )
+if not hasattr(app, "game"):
+
+    app.game = GameState()
+    app.game.set_dungeon(Dungeon(HERE(__file__, "maps/base_map.json")))
+    app.game.set_player_class(Player)
 
 
 
