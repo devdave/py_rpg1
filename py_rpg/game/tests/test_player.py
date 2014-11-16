@@ -2,22 +2,19 @@ import nose
 with_setup = nose.with_setup
 eq_ = nose.tools.eq_
 
-import os
-#shortcut aliases
-ABP = os.path.abspath
-J = os.path.join
-DRN = os.path.dirname
 
 from py_rpg.game.player import Player
 
-def test_create_new_player():
+def test_player__create_rebuild_instantiates():
+    """
+        This is a REALLY simple test, if nothing throws an
+           exception, it passes!
+    """
     new_session = {}
     player = Player.Create_Rebuild(new_session)
 
 
-
-def test_player_save():
-
+def test_player__save():
 
     player = Player.Create_Rebuild({})
 
@@ -28,7 +25,7 @@ def test_player_save():
     assert session['player'].get('location_id', False) != False, str(session)
 
 
-def test_player_load():
+def test_player__load():
     session = {}
     session['player'] = {}
     session['player']['location_id'] = "room_2"
@@ -39,7 +36,7 @@ def test_player_load():
 
 
 
-def test_Create_Rebuild():
+def test_player__Create_Rebuild():
 
     session = {}
     session['player'] = {}
