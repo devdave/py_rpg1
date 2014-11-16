@@ -5,17 +5,11 @@
         <Title>Open Python RPG</Title>
     </head>
     <body>
-        {% with messages = get_flashed_messages() %}
-        <div id="events">
-            {% if messages %}
-                {% for message in messages %}
-                    {{message}}<br>
-                {% endfor %}
-            {% else %}
-                Welcome to the start, you're in an empty room!
 
-                You can go in any direction from here.
-            {% endif %}
+        <div id="events">
+            <div>{{ room.title }}</div>
+            <div>{{ room.description }}</div>
+            <div>You can go: {{room.directions }}</div>
         </div>
         {% endwith %}
         <div id="actions">
