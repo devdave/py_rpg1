@@ -9,13 +9,9 @@ from py_rpg.game.gamestate import GameState
 from py_rpg.game.dungeon import Dungeon
 from py_rpg.game.player import Player
 
-#shortcut aliases
-import os
-ABP = os.path.abspath
-J = os.path.join
-DRN = os.path.dirname
+from helpers import HERE
+MAP_FILE = HERE(__file__, "map_data.json")
 
-MAP_FILE = ABP(J(DRN(__file__), "map_data.json"))
 
 gamestate = None
 
