@@ -1,4 +1,3 @@
-
 from nose import with_setup
 from nose.tools import eq_
 
@@ -64,7 +63,6 @@ def teardown_func():
 
 #Tell Nose that this is not a unit test
 teardown_func.__test__ = False
-
 
 
 def test_instantiates():
