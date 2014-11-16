@@ -47,13 +47,13 @@ def teardown_func():
 teardown_func.__test__ = False
 
 
-def test_instantiates():
+def test_dungeon__instantiates():
     dungeon = Dungeon(MAP_FILE)
     eq_(dungeon.starting_location, "room_1")
     assert isinstance(dungeon.rooms, dict)
 
 @with_setup(setup_func, teardown_func)
-def test_room_direction_list():
+def test_room__direction_list():
     room = dungeon.get("room_1")
     actual_directions = room.direction_list()
     expected_directions = ['east','south']
@@ -68,16 +68,17 @@ def test_room__directions():
     eq_(expected_directions, actual_directions)
 
 @with_setup(setup_func, teardown_func)
-def test_get_room_returns_expected_value():
+def test_dungeon__get_returns_expected_value():
     room = dungeon.get("room_1")
     assert isinstance(room, Room), "Expecting a room, got {}".format(room)
+    eq_(room.id, "room_1")
 
 @with_setup(setup_func, teardown_func)
-def test_assert_dungeon_size_is_correct():
+def test_dungeon__dungeon_rooms_is_correct_size():
     eq_(len(dungeon.rooms), 4)
 
 @with_setup(setup_func, teardown_func)
-def test_assert_all_rooms_are_unique():
+def test_dungeon__all_rooms_are_unique():
     unique_values = set()
     total_values = []
     for room_id, _ignore in dungeon.rooms.items():
