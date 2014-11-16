@@ -1,6 +1,6 @@
 {
     "room_1": {
-        "title": "Room2",
+        "title": "Room1",
         "connections": {"east":"room_2", "south":"room_3"},
         "start_in": true
     },
