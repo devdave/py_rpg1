@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 
+#ignore temp directory if any exists
+temp/*
 # C extensions
 *.so
 
@@ -57,3 +59,4 @@ target/
 py_rpg/app.pyc
 *.pyc
 *.komodotool
+*.tar
