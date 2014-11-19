@@ -23,170 +23,188 @@ function renderBox(ctx, x, y, h, w, fill) {
     }
 }
 
-        function interconnectLines(ctx,
-                bX, //Top left corner
-                bY, //Top left corner
-                bW, // width
-                bH, //Height - TODO abstract box to an object
-                doHorz, //Optional
-                doVert  //Optional
-                ) {
+function interconnectLines(ctx,
+        bX, //Top left corner
+        bY, //Top left corner
+        bW, // width
+        bH, //Height - TODO abstract box to an object
+        doHorz, //Optional
+        doVert  //Optional
+        ) {
 
-            if (doHorz === false && doVert === false) {
-                return;
+    "use strict";
+
+    if (doHorz === false && doVert === false) {
+        return;
+    }
+
+    //horizontal first
+    //we want to draw from the middle of the box to the next
+    //box over.  It is assumed that higher level
+    //logic above this ensure's there IS in fact box
+
+    //The target is the boxes's center
+    var halfW = bW / 2,
+        halfH = bH / 2,
+        boxRight = { x: bX + bW + halfW, y: bY + halfH  },
+        boxDown  = { x: bX + halfW, y: bY + bH + halfH },
+        boxCur   = { x: bX, y: bY };
+
+
+    function center() {
+        ctx.moveTo(boxCur.x + halfW, boxCur.y + halfH);
+    }
+    ctx.save();
+    ctx.beginPath();
+
+    if (doHorz) {
+        //It's just a step to the right!
+        center();
+        ctx.lineTo(boxRight.x, boxRight.y);
+    }
+
+    if (doVert) {
+        //And then a jump down!
+        center();
+        ctx.lineTo(boxDown.x, boxDown.y);
+
+    }
+
+    ctx.stroke();
+    ctx.restore();
+
+    return;
+}
+
+( function() {
+    "use strict";
+    var map_cnv = document.getElementById("map_cnv"),
+        map_ctx = map_cnv.getContext("2d"),
+        cWidth = map_cnv.width,
+        cHeight = map_cnv.height,
+
+        gridSize = 3,
+        gridRowCnt = gridSize,
+        gridColCnt = gridSize,
+
+
+        boxWidth = cWidth / gridColCnt,
+        boxHeight = cHeight / gridRowCnt,
+
+        squareInsetDepth = 0.10,
+        insetWidth = boxWidth * squareInsetDepth,
+        insetHeight = boxHeight * squareInsetDepth,
+        //squareMaxRowSize = cWidth / gridRowCnt,
+        //squareMaxColSize = cHeight / gridColCnt,
+
+
+        //squareInsetX = boxWidth * (squareInsetDepth * 2),
+        //squareInsetY = boxHeight * squareInsetDepth,
+        //squareInsetH = boxHeight - (squareInsetX * 2),
+        //squareInsetW = boxWidth - squareInsetY * 2,
+        showPerimeter = true,
+        showBox = true,
+        showLine = true,
+        xPos = 0,
+        yPos = 0;
+        //halfX = 0,
+        //halfY = 0,
+        //nextX = 0,
+        //nextY = 0;
+
+    //Make all lines crisper
+    map_ctx.translate(0.5, 0.5);
+
+    map_ctx.strokeStyle = "black";
+    map_ctx.save();
+    map_ctx.beginPath();
+
+
+
+    for (var r = 0; r < gridColCnt; r++) {
+        //Been a while since I've worked with c++ ;)
+
+        for(var c = 0; c < gridRowCnt; c++) {
+
+            xPos = c*boxWidth;
+            yPos = r*boxHeight;
+
+
+            map_ctx.moveTo(xPos,yPos);
+
+            if (showPerimeter) {
+
+                map_ctx.save();
+                map_ctx.strokeStyle = "black";
+                renderBox(map_ctx, xPos, yPos, boxWidth, boxHeight );
+
+                map_ctx.restore();
             }
 
-            //horizontal first
-            //we want to draw from the middle of the box to the next
-            //box over.  It is assumed that higher level
-            //logic above this ensure's there IS in fact box
+            if (showLine) {
 
-            //The target is the boxes's center
-            var halfW = bW / 2,
-                halfH = bH / 2,
-                boxRight = { x: bX + bW + halfW, y: bY + halfH  },
-                boxDown  = { x: bX, y: bY + bH },
-                boxCur   = { x: bX, y: bY };
+                map_ctx.strokeStyle = "orange";
+                interconnectLines(
+                    map_ctx,
+                    xPos,
+                    yPos,
+                    boxWidth,
+                    boxHeight,
+                    c+1 < gridRowCnt,
+                    r+1 < gridColCnt
+                );
 
-
-                console.log(arguments, halfW, halfH);
-                function center(){
-                    ctx.moveTo(boxCur.x + halfW, boxCur.y + halfH);
-                }
-                ctx.save();
-                ctx.beginPath()
-
-                if (doHorz) {
-                    //It's just a step to the right!
-
-                    //Current to right
-                    center();
-                    ctx.lineTo(boxRight.x, boxRight.y );
-                }
+            }
 
 
-                //Current to bottom
-                if (doVert) {
+            if (showBox) {
+                debugger;
+                map_ctx.save();
+                map_ctx.fillStyle = "blue";
+                /**
+                    I wrote this and it still confused
+                    me when I pass over it.
 
-                    center();
-                    ctx.lineTo(boxDown.x + halfW, boxDown.y + halfH);
+                    So we want the interior square to have
+                    10% padding around it.
 
-                }
+                    So 1st two arguments, we move our box
+                    down and right by 10%... BUT the box
+                    itself is still 100% sized.
 
-                ctx.stroke();
-                ctx.restore();
+                    We still want 10% padding per side.
+                    left + right + box.width must equal 100
 
-                return;
+                    the 2 & 3rd argument + inset H & W
+                    only pushes the box 10% down and 10% right
+                    but the box is still 100%.
+
+                    So for arguments 4 & 5, you shrink the
+                    box by 20% so that you get 10% padding
+                    on all sides.
+
+                */
+                renderBox(map_ctx,
+                           xPos + insetWidth,
+                           yPos + insetHeight,
+                           boxWidth - ( insetWidth * 2),
+                           boxHeight - ( insetHeight * 2) ,
+                           true
+                );
+                map_ctx.restore();
+
+                debugger;
+
+            }
+
 
         }
 
-        (function(){
-            var map_cnv = document.getElementById("map_cnv"),
-                map_ctx = map_cnv.getContext("2d");
 
-                //Make all of the lines crisper
-                map_ctx.translate(.5, .5);
-
-
-            var cWidth = map_cnv.width,
-                cHeight = map_cnv.height,
-
-                squareRowCnt = 3,
-                gridRowCnt = 3,
-
-                squareColCnt = 3,
-                gridColCnt = 3,
-                boxWidth = cWidth / squareColCnt,
-                boxHeight = cHeight / squareRowCnt,
-
-                squareMaxRowSize = cWidth / squareRowCnt,
-                squareMaxColSize = cHeight / squareColCnt,
-                squareInsetDepth = 0.10,
-                squareInsetX = squareMaxColSize * (squareInsetDepth*2),
-                squareInsetY = squareMaxRowSize * squareInsetDepth,
-                squareInsetH = squareMaxRowSize - (squareInsetX*2),
-                squareInsetW = squareMaxColSize - squareInsetY*2,
-                showPerimeter = true,
-                showBox = true,
-                showLine = true,
-                xPos = 0,
-                yPos = 0,
-                halfX = 0,
-                halfY = 0,
-                nextX = 0,
-                nextY = 0;
-
-                console.log("height", map_cnv.width);
-                console.log("width", map_cnv.height);
-
-                console.log(map_cnv.width, map_cnv.height);
+    }
+    //map_ctx.stroke();
+    map_ctx.restore();
 
 
 
-                map_ctx.strokeStyle = "black";
-                map_ctx.save();
-                map_ctx.beginPath()
-
-
-
-                for (var r = 0; r < squareColCnt; r++) {
-                    //Been a while since I've worked with c++ ;)
-
-                    for(var c = 0; c < squareRowCnt; c++) {
-
-                        xPos = c*squareMaxRowSize;
-                        yPos = r*squareMaxColSize;
-
-
-                        map_ctx.moveTo(xPos,yPos);
-
-                        if (showPerimeter) {
-
-                            map_ctx.save();
-                            map_ctx.strokeStyle = "black";
-                            renderBox(map_ctx, xPos, yPos, squareMaxRowSize, squareMaxColSize );
-
-                            map_ctx.restore()
-                        }
-
-                        if (showLine) {
-                            console.log(c,r);
-                            map_ctx.strokeStyle = "orange";
-                            interconnectLines(
-                                map_ctx,
-                                xPos,
-                                yPos,
-                                boxWidth,
-                                boxHeight,
-                                c+1 < squareColCnt,
-                                r+1 < squareRowCnt
-                            );
-
-                        }
-
-
-                        if (showBox) {
-                            map_ctx.save()
-                            map_ctx.fillStyle = "blue";
-                            renderBox(map_ctx,
-                                       xPos + squareInsetX,
-                                       yPos + squareInsetY,
-                                       squareInsetH,
-                                       squareInsetW,
-                                       true
-                            );
-                            map_ctx.restore()
-
-                        }
-
-
-                    }
-
-
-                }
-                //map_ctx.stroke();
-                map_ctx.restore();
-
-
-
-        })()
+})();
