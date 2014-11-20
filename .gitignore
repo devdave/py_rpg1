@@ -1,4 +1,4 @@
-/py_rpg/static/prototypes/ping_js/out/
+prototypes/ping_js/out/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -63,3 +63,4 @@ py_rpg/app.pyc
 *.pyc
 *.komodotool
 *.tar
+
