@@ -1,12 +1,18 @@
-ping.ns("ping.Lib");
-ping.Lib.MainLoop = function(){                
+/**
+@namespace
+*/
+/**
+@function
+@deprecated
+*/
+ping.Lib.MainLoop = function(){
                 var self = this;
                 var tickTime = 10; //How many times to rerun through the game loop in MS
-                
-                // Constant function queue                 
+
+                // Constant function queue
                 self.constantList = [];
-                
-                //List of functions to be run per tick as needed                 
+
+                //List of functions to be run per tick as needed
                 self.runQueue = [];
                 /**
                  *The logic loop's interval ID
@@ -21,15 +27,15 @@ ping.Lib.MainLoop = function(){
                             self.stop();
                         }
                     });
-                                
-                    if(self.runQueue.length > 0){                    
+
+                    if(self.runQueue.length > 0){
                         var func = runQueue.shift();
                         func();
-                    }    
+                    }
                 }
-                
+
                 self.start = function(){
-                    runnerHandle = setInterval(self.logicLoop, tickTime);    
+                    runnerHandle = setInterval(self.logicLoop, tickTime);
                 }
                 self.stop = function(){
                     clearInterval(runnerHandle);
