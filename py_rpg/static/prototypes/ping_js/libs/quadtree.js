@@ -1,19 +1,20 @@
 
-ping.Lib.util = {}
+ping.Lib.util = ping.Lib.util || {};
+
 ping.Lib.util.inside = function(pos, low, high){
     return (pos > low & pos < high);
 }
 ping.Lib.util.insideBox = function(x,y, box){
-    var eX = box.x || box[0];
-    var eY = box.y || box[1];
-    var sx = box.sx || box[2];
-    var sy = box.sy || box[3];
+    var eX = box.x || box[0],
+        eY = box.y || box[1],
+        sx = box.sx || box[2],
+        sy = box.sy || box[3];
     return (( ping.Lib.util.inside(x, eX, eX + sx)) && (ping.Lib.util.inside(y, eY, eY +sy)))
 }
 
 /**
  *Quadrant is a recursive quad-tree like structure that
- *breaks a given area progressivel into 4 quadrants.
+ *breaks a given area progressively into 4 quadrants.
  *
  *
  *@argument {Integer} mx Upper left x coordinate
