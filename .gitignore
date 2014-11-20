@@ -10,6 +10,7 @@ temp/*
 # Distribution / packaging
 .Python
 env/
+lenv/
 build/
 develop-eggs/
 dist/
