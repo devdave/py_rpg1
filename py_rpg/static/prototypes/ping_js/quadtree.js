@@ -1,5 +1,4 @@
 
-
 ping.Lib.util = {}
 ping.Lib.util.inside = function(pos, low, high){
     return (pos > low & pos < high);

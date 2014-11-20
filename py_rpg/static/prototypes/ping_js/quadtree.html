@@ -37,10 +37,8 @@
                     balls.push(ballFactory(600,400));
                 }
 
-                var stepPos = 9,
-                    canvas = document.getElementById("mapper"),
-                    ctx = canvas.getContext("2d");
-
+                var stepPos = 9;
+                ctx = ping.$C("mapper");
                 map = QuadrantFactory(ctx, stepPos);
                 var fps = 0, now, lastUpdate = (new Date)*1 - 1;
 
@@ -64,8 +62,7 @@
                     }
 
                     ctx.beginPath();
-                    ctx.clearRect(0,0,canvas.clientWidth, canvas.clientHeight );
-
+                    ctx.clearAll();
                     for(var i = 0; i < balls.length; i++){
                         balls[i] = RenderBall(balls[i], map, ctx)
                     }
