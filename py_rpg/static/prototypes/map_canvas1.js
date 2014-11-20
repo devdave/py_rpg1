@@ -158,7 +158,6 @@ function interconnectLines(ctx,
 
 
             if (showBox) {
-                debugger;
                 map_ctx.save();
                 map_ctx.fillStyle = "blue";
                 /**
@@ -193,7 +192,6 @@ function interconnectLines(ctx,
                 );
                 map_ctx.restore();
 
-                debugger;
 
             }
 
