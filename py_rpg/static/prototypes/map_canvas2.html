@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Map prototype 1</title>
+        <style>
+            canvas {
+                border: solid thin black;
+                width: 500px;
+                height: 500px;
+            }
+        </style>
+        <script src="./p2_fake_map.js"></script>
+        <script src="./map_canvas2.js"></script>
+    </head>
+    <body>
+        <canvas id="map_cnv"></canvas>
+        <div id="controls">
+            <button name="go" value="">up</button>
+            <button name="go" value="">north</button>
+            <button name="go" value="">down</button>
+            <br>
+            <button name="go" value="">west</button>
+            <button name="go" value="">south</button>
+            <button name="go" value="">east</button>
+        </div>
+    </body>
+
+
+    <script>
+        (function(){
+            initialize_map(map_lookup, gridW, gridH);
+        })();
+    </script>
+
+
+</html>
