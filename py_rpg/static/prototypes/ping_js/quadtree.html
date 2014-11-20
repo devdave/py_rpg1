@@ -2,17 +2,18 @@
 <html>
     <head>
         <title>Mapping/partitioning</title>
-        <script src="./js/jquery.js"></script>
+        <!--<script src="./js/jquery.js"></script>-->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <!--<script type="text/javascript" src="/js/jquery.jstree.js"></script>-->
-        <script src="libs/ping.main.js"></script>
-        <script src="libs/ping.shapes.js"></script>
-        <script src="libs/ping.canvas.js"></script>
-        <script src="libs/ping.intersection.js"></script>
+        <script src="./libs/ping.main.js"></script>
+        <script src="./libs/ping.shapes.js"></script>
+        <script src="./libs/ping.canvas.js"></script>
+        <script src="./libs/ping.intersection.js"></script>
         <script src="./quadtree.js"></script>
         <script src="./quadtree.util.js"></script>
     </head>
     <body>
-        
+
         <canvas height="400" width="600" id="mapper"></canvas>
         <div class="statPanel" style="float:right">
             <label>Allow move<input type="checkbox" id="allowMove" checked></label>
@@ -21,31 +22,33 @@
             <ol id="wtf"></ol><br/>
             <label>Node list</label>
             <ul id="nodeList"></ul>
-            
+
         </div>
         <script>
-            
+
             function run(){
-                
+
                 var allowMovement = true;
                 $("#allowMove").change(function(){
                     allowMovement = !allowMovement;
                     });
                 var balls = [];
                 for(var bMax = 0; bMax < 50; bMax++){
-                    balls.push(ballFactory(600,400));                 
+                    balls.push(ballFactory(600,400));
                 }
-                
-                var stepPos = 9;
-                ctx = ping.$C("mapper");
+
+                var stepPos = 9,
+                    canvas = document.getElementById("mapper"),
+                    ctx = canvas.getContext("2d");
+
                 map = QuadrantFactory(ctx, stepPos);
                 var fps = 0, now, lastUpdate = (new Date)*1 - 1;
 
                 // The higher this value, the less the FPS will be affected by quick changes
                 // Setting this to 1 will show you the FPS of the last sampled frame only
                 var fpsFilter = 50;
-                
-                
+
+
                 function runLogic(){
                     var start = new Date().getTime();
                     var highX = 0, highY = 0;
@@ -58,10 +61,11 @@
                             balls[i].step();
                             balls[i] = RunBall(balls[i], map, allowMovement);
                         }
-                    }    
-                    
+                    }
+
                     ctx.beginPath();
-                    ctx.clearAll();
+                    ctx.clearRect(0,0,canvas.clientWidth, canvas.clientHeight );
+
                     for(var i = 0; i < balls.length; i++){
                         balls[i] = RenderBall(balls[i], map, ctx)
                     }
@@ -72,23 +76,23 @@
                     var thisFrameFPS = 1000 / ((now=new Date) - lastUpdate);
                     fps += (thisFrameFPS - fps) / fpsFilter;
                     lastUpdate = now;
-                    
+
                 }
 
-                    
+
                     var fpsOut = $('#fps');
                     setInterval(function(){
                             fpsOut.val(fps.toFixed(1) + "fps");
                     }, 1000);
-                    
+
                     setTimeout(runLogic,0);
 
-               
-               
+
+
             };
-        
+
             $(run);
         </script>
-        
+
     </body>
 </html>

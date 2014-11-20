@@ -1,5 +1,4 @@
 
-
 ping.Lib.util = {}
 ping.Lib.util.inside = function(pos, low, high){
     return (pos > low & pos < high);
@@ -9,7 +8,7 @@ ping.Lib.util.insideBox = function(x,y, box){
     var eY = box.y || box[1];
     var sx = box.sx || box[2];
     var sy = box.sy || box[3];
-    return (( ping.Lib.util.inside(x, eX, eX + sx)) && (ping.Lib.util.inside(y, eY, eY +sy)))
+    return (( ping.Lib.util.inside(x, eX, eX + sx)) && (ping.Lib.util.inside(y, eY, eY +sy)))    
 }
 
 /**
@@ -23,7 +22,7 @@ ping.Lib.util.insideBox = function(x,y, box){
  *@argument {integer} ly lower right y coordinate
  *@argument {Integer} depth determines how many more quadrants to descend down
  */
-function Quadrant(x, y, sx, sy, depth, name){
+ping.Lib.Quadrant = function(x, y, sx, sy, depth, name){  
     this.x = x;
     this.y = y;
     this.sx = sx;
@@ -39,16 +38,16 @@ function Quadrant(x, y, sx, sy, depth, name){
     this.ur = null;
     /* @property {Quadrant} lr Lower right*/
     this.lr = null;
-
+    
 
 }
 
-Quadrant.prototype.ulAddIf = function(entity){
+ping.Lib.Quadrant.prototype.ulAddIf = function(entity){
     //step 1 does this belong here
-    var box = [this.x, this.y, this.sx/2, this.sy / 2];
+    var box = [this.x, this.y, this.sx/2, this.sy / 2];    
     if( ping.Lib.util.insideBox(entity.x, entity.y, box) ){
         if(this.ul == null){
-            this.ul = new Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->ul");
+            this.ul = new ping.Lib.Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->ul");         
         }
         this.ul.add(entity);
         return true;
@@ -56,43 +55,43 @@ Quadrant.prototype.ulAddIf = function(entity){
     return false;
 }
 
-Quadrant.prototype.urAddIf = function(entity){
+ping.Lib.Quadrant.prototype.urAddIf = function(entity){
     //step 1 does this belong here
-    var box = [this.x + this.sx/2, this.y, this.sx/2, this.sy / 2];
+    var box = [this.x + this.sx/2, this.y, this.sx/2, this.sy / 2];    
     if( ping.Lib.util.insideBox(entity.x, entity.y, box) ){
         if(this.ur == null){
-
-            this.ur = node = new Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->ur");
+            
+            this.ur = node = new ping.Lib.Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->ur");
         }
         this.ur.add(entity);
         return true;
     }
     return false;
-
+    
 }
 
-Quadrant.prototype.llAddIf = function(entity){
+ping.Lib.Quadrant.prototype.llAddIf = function(entity){
     //step 1 does this belong here
-    var box = [this.x, this.y + this.sy / 2, this.sx/2, this.sy / 2];
+    var box = [this.x, this.y + this.sy / 2, this.sx/2, this.sy / 2];    
     if( ping.Lib.util.insideBox(entity.x, entity.y, box) ){
         if(this.ll == null){
-
-            this.ll = new Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->ur");
+            
+            this.ll = new ping.Lib.Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->ur");
         }
         this.ll.add(entity);
         return true;
     }
     return false;
-
+                
 }
 
-Quadrant.prototype.lrAddIf = function(entity){
+ping.Lib.Quadrant.prototype.lrAddIf = function(entity){
     //step 1 does this belong here
-    var box = [this.x + this.sx/2, this.y + this.sy / 2, this.sx/2, this.sy / 2];
+    var box = [this.x + this.sx/2, this.y + this.sy / 2, this.sx/2, this.sy / 2];    
     if( ping.Lib.util.insideBox(entity.x, entity.y, box) ){
         if(this.lr == null){
-
-            this.lr = new Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->lr");
+            
+            this.lr = new ping.Lib.Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->lr");
         }
         this.lr.add(entity);
         return true;
@@ -107,7 +106,7 @@ Quadrant.prototype.lrAddIf = function(entity){
  *@argument x is either an X coordinate or a point
  *@argument {Integer} y
  */
-Quadrant.prototype.contains  = function(x, y){
+ping.Lib.Quadrant.prototype.contains  = function(x, y){
     return (x > this.x  && x < this.x + this.sx)
         && (y > this.y  && y < this.y + this.sy);
 }
@@ -119,13 +118,13 @@ Quadrant.prototype.contains  = function(x, y){
  *@argument x is either an X coordinate or a point
  *@argument {Integer} y
  */
-Quadrant.prototype.containsBox  = function(box){
+ping.Lib.Quadrant.prototype.containsBox  = function(box){
     return ping.Lib.intersects.box(this,box);
     /**
      *AxMin > BxMax and AxMax > BxMin
         AyMin > ByMax and AyMax > ByMin
      */
-    //return (
+    //return (     
     //return (this.x > box.x + box.sx  && x < this.x + this.sx)
     //    && (y > this.y  && y < this.y + this.sy);
 }
@@ -137,19 +136,20 @@ Quadrant.prototype.containsBox  = function(box){
  *
  *@property {x,y,sx,sy} All information needed to map out a box shape
  */
-Quadrant.prototype.add = function(entity){
-
+ping.Lib.Quadrant.prototype.add = function(entity){
+    
     //Has this quadrant divided already?
     if(this.entities == null){
-        this.lrAddIf(entity) || this.urAddIf(entity) || this.llAddIf(entity) || this.ulAddIf(entity);
-        return;
-    }
+        var failed = this.lrAddIf(entity) || this.urAddIf(entity) || this.llAddIf(entity) || this.ulAddIf(entity);
+        
+        return failed;
+    }    
     //Should this quadrant be divided?
     if(this.entities.length >= 1 && this.depth > 1 ){
-        //This Quadrant has become crowded, flush out all entities down the next level
+        //This Quadrant has become crowded, flush out all entities down the next level        
         this.entities.push(entity);
         this.divide();
-        this.entities = null;
+        this.entities = null;        
     }else{
         //No, push entity to this Quadrant
         this.entities.push(entity);
@@ -160,32 +160,30 @@ Quadrant.prototype.add = function(entity){
  *Divide current Quadrant
  *
  */
-Quadrant.prototype.divide = function(){
+ping.Lib.Quadrant.prototype.divide = function(){
     var entity = null;
-    while(entity = this.entities.pop()){
-
-        var failed = this.lrAddIf(entity) || this.urAddIf(entity) || this.llAddIf(entity) || this.ulAddIf(entity)
-        //if(failed == false){
-        //    throw {msg:"Could not place entity"};
-        //}
+    while(entity = this.entities.pop()){        
+        var failed = this.lrAddIf(entity) || this.urAddIf(entity) || this.llAddIf(entity) || this.ulAddIf(entity)        
     }
 }
 
 
-Quadrant.prototype.render = function(ctx, depth){
+ping.Lib.Quadrant.prototype.render = function(ctx, depth){
     ctx.strokeRect(this.x, this.y, this.sx, this.sy);
     if(this.ul) this.ul.render(ctx, depth -1);
     if(this.ur) this.ur.render(ctx, depth -1);
     if(this.lr) this.lr.render(ctx, depth -1);
     if(this.ll) this.ll.render(ctx, depth -1);
-
+    
 }
 
-Quadrant.prototype.loop = function(block){
+ping.Lib.Quadrant.prototype.loop = function(block){
+    //DEPRECATED
+    console.error("Deprecated, non-performent!")
     var retvals = [];
     var points = ["ul","ll",'ur','lr'];
     for(var i = 0; i < points.length; i++ ){
-        if( this[points[i]] instanceof Quadrant ){
+        if( this[points[i]] instanceof ping.Lib.Quadrant ){
             retvals.push( block.call(this[points[i]], points[i]));
         }
     }
@@ -197,10 +195,10 @@ Quadrant.prototype.loop = function(block){
  *an entity
  *
  *@param {Integer} x
- *@param {Integer} y
+ *@param {Integer} y 
  *@returns {Array} returns all quadrants from top to bottom that contain an entity
  */
-Quadrant.prototype.find = function(x,y){
+ping.Lib.Quadrant.prototype.find = function(x,y){
     var myTargets = [];
 
     if(this.contains(x,y)){
@@ -224,27 +222,20 @@ Quadrant.prototype.find = function(x,y){
  *@param {Object} box has x,y and sx,sy properties
  *@returns {Array} returns all quadrants from top to bottom that contain an entity
  */
-Quadrant.prototype.findBox = function(box){
-
+ping.Lib.Quadrant.prototype.findBox = function(box){
+    
     if(this.entities == null){
             var temp = [];
             if(this.ul  && this.ul.containsBox(box))    temp = temp.concat( this.ul.findBox(box));
             if(this.ur  && this.ur.containsBox(box))    temp = temp.concat( this.ur.findBox(box));
             if(this.lr  && this.lr.containsBox(box))    temp = temp.concat( this.lr.findBox(box));
             if(this.ll  && this.ll.containsBox(box))    temp = temp.concat( this.ll.findBox(box));
-            return temp;
+            return temp;        
     }else{
-        return [this];
+        return this.entities;
     }
 }
 
-function QuadrantFactory(ctx, max){
-    return new Quadrant(0,0, ctx.canvas.clientWidth, ctx.canvas.clientHeight, max || 4 )
+ping.QuadrantFactory = function (ctx, max){
+    return new ping.Lib.Quadrant(0,0, ctx.canvas.clientWidth, ctx.canvas.clientHeight, max || 4 )
 }
-
-
-
-
-(function(){
-    console.log("Test here!");
-}());
