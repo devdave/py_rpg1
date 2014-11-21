@@ -1,4 +1,9 @@
 /**
+@fileoverview Provides a fly-weight light caching for canvas objects as well
+as overloading/monkey patching the default CanvasRenderingContext2d class
+to provide some additional features.
+*/
+/**
  *Canvas additions library
  *
  *Adds some useful new methods and helpers to the canvas

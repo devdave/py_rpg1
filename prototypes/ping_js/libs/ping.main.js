@@ -10,6 +10,7 @@ var ping = { "Lib" : {}};
 /**
  *Namespace utility
  *
+ @deprecated Cool idea once, breaks JsDoc as you can't document namespaces with it
  *@param ns {String} An array or string of namespaces to create or verify exist
  *@param toApply {Function} Adds
  *@returns {Object} Last element in a NS
@@ -26,7 +27,8 @@ ping.namespace = function(ns, toApply){
 
 /**
  *With Namespace/object extension helper
- *
+
+ @deprecated maybe?  I was big into ExtJS when I was writing this.
  *Provides a namespace safe mechanism for extending a functions prototype or decorating an object
  */
 ping.w = function(target, toApply){

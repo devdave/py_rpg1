@@ -17,6 +17,7 @@ ping.Lib.util.insideBox = function(x,y, box){
  *breaks a given area progressively into 4 quadrants.
  *
  *
+ @class
  *@argument {Integer} mx Upper left x coordinate
  *@argument {Integer} my Upper left y coordinate
  *@argument {Integer} lx lower right x coordinate
@@ -135,7 +136,7 @@ Quadrant.prototype.containsBox  = function(box){
  *High level Entity Add logic, focuses on where to route
  *a new entity.
  *
- *@property {x,y,sx,sy} All information needed to map out a box shape
+ *property {x,y,sx,sy} All information needed to map out a box shape
  */
 Quadrant.prototype.add = function(entity){
 
