@@ -1,3 +1,6 @@
+/**
+@fileoverview Main script file, set's up the ping namespace.
+*/
 
 /**
  *Global Application logic collection, should hold only instances
