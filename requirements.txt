@@ -5,6 +5,7 @@ PyYAML==3.11
 Werkzeug==0.9.6
 argh==0.26.1
 astroid==1.2.1
+closure==20140110
 colorama==0.3.2
 coverage==4.0a1
 dbgp==1.1

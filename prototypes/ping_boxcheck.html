@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="./ping_js/ping.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    </head>
+    <body>
+        <canvas width="600" height="400" id="boxCheck"></canvas>
+        <ul style="float:right" id="console"></ul>
+        <script>
+            ping.namespace("ping.box.intersects");
+        </script>
+        <script>
+            function ar2box(ar){
+                var box = {
+                    x : ar[0],
+                    y : ar[1],
+                    sx : ar[2],
+                    sy : ar[3]
+                };
+                box.ox  = (ar[2] / 2) + ar[0];
+                box.oy  = (ar[3] / 2) + ar[1];
+
+                return box;
+            }
+
+            var ctx = ping.$C("boxCheck"),
+                boxes = {
+                    a: ar2box([0,0,100,100]), //a
+                    A: ar2box([50,50,125,125]), //A
+                    b: ar2box([125,0,100,100]), //b
+                    c: ar2box([125,125,100,100]), //b
+                    d: ar2box([0,125,100,100]),
+                    e: ar2box([0,0,550,350]),
+                    f: ar2box([10,10,200,50]),
+                    g: ar2box([10,10,50, 200]),
+                    h: ar2box([10,160,200, 50]),
+                    i: ar2box([160,10, 50, 200]),
+                }
+
+
+
+                box     = [ boxes.e ]
+                index = ['e'];
+
+            for (var p in boxes) {
+                if (boxes.hasOwnProperty(p) && p != 'e') {
+                    console.log(p, boxes[p]);
+                    index.push(p);
+                    box.push(boxes[p])
+                }
+            }
+
+    (function(){
+
+            ctx.fillStyle = "blue";
+            var matrix = {}
+
+            for (var myboxName in boxes) {
+
+                if (!boxes.hasOwnProperty(myboxName)) {
+                    continue;
+                }
+
+                var myBox = boxes[myboxName];
+                    matrix[myboxName] = {};
+
+                ctx.beginPath();
+                ctx.rect(myBox.x, myBox.y, myBox.sx, myBox.sy);
+                ctx.closePath();
+                ctx.stroke();
+
+
+
+                for(var ii = 0; ii<index.length; ii++){
+                    var otherboxName = index[ii];
+                    if (matrix[myboxName][otherboxName] == undefined) {
+                        matrix[myboxName][otherboxName] = {}
+                    }
+
+                    otherBox = boxes[otherboxName];
+
+                    if (otherboxName == myboxName) {
+                        continue;
+                    }
+                    matrix[myboxName][otherboxName] = ping.Lib.intersects.box(
+                                myBox,
+                                otherBox
+                             )
+                    var text = otherboxName +
+                            " intersects " +
+                            myboxName +
+                            " " +
+                            (ping.Lib.intersects.box(
+                                myBox,
+                                otherBox
+                             ) ? "true" : "false");
+                    console.log(text);
+                    $("#console").append($("<li>").text(text));
+
+                }
+                ctx.beginPath();
+                ctx.fillText("Box " + myboxName, myBox.ox, myBox.oy, 175 );
+                ctx.closePath();
+                ctx.stroke();
+
+                ctx.save();
+                ctx.strokeStyle = "red";
+                ctx.moveTo(myBox.ox, myBox.oy);
+                ctx.lineTo(myBox.ox, myBox.oy + 10);
+                ctx.stroke();
+                ctx.restore();
+
+
+            }
+        console.log("done");
+        })();
+        </script>
+    </body>
+</html>
