@@ -9,12 +9,12 @@
         <script src="./libs/ping.shapes.js"></script>
         <script src="./libs/ping.canvas.js"></script>
         <script src="./libs/ping.intersection.js"></script>
-        <script src="./libs/quadtree.js"></script>
+        <script src="./libs/ping.qtree.js"></script>
         <script src="./libs/quadtree.util.js"></script>
     </head>
     <body>
 
-        <canvas height="400" width="600" id="mapper"></canvas>
+        <canvas height="600" width="800" id="mapper"></canvas>
         <div class="statPanel" style="float:right">
             <label>Allow move<input type="checkbox" id="allowMove" checked></label>
             <label>FPS (Est)<input type="text" value="" id="fps"></label>
@@ -28,19 +28,47 @@
 
             function run(){
 
+                var mouseIn = false,
+                    mouseX = 0,
+                    mouseY = 0,
+                    canvas_elm = document.getElementById("mapper"),
+                    mouse_contex = ping.$C("mapper"),
+                    doc_root = document.documentElement,
+                    canvas_rect = canvas_elm.getBoundingClientRect();
+
+                function on_mousemove(evt) {
+                    mouseIn = true;
+                    mouseX = evt.clientX - canvas_rect.left - doc_root.scrollLeft,
+                    mouseY = evt.clientY - canvas_rect.top - doc_root.scrollTop;
+                }
+
+
+
+
+                canvas_elm.onmousemove = on_mousemove;
+                canvas_elm.addEventListener("onmouseover", on_mousemove);
+
+                canvas_elm.addEventListener("mouseout", function(evt) {
+                    mouseIn = false;
+                });
+
+
+
                 var allowMovement = true;
                 $("#allowMove").change(function(){
                     allowMovement = !allowMovement;
                     });
                 var balls = [];
                 for(var bMax = 0; bMax < 50; bMax++){
-                    balls.push(ballFactory(600,400));
+                    balls.push(ballFactory(canvas_elm.height,canvas_elm.width));
                 }
 
-                var stepPos = 9;
-                ctx = ping.$C("mapper");
-                map = QuadrantFactory(ctx, stepPos);
-                var fps = 0, now, lastUpdate = (new Date)*1 - 1;
+                var stepPos = 12,
+                    ctx = ping.$C("mapper"),
+                    map = ping.QuadrantFactory(ctx, stepPos),
+                    fps = 0,
+                    now,
+                    lastUpdate = (new Date)*1 - 1;
 
                 // The higher this value, the less the FPS will be affected by quick changes
                 // Setting this to 1 will show you the FPS of the last sampled frame only
@@ -51,7 +79,7 @@
                     var start = new Date().getTime();
                     var highX = 0, highY = 0;
                     delete map;
-                    map = QuadrantFactory(ctx, stepPos);
+                    map = ping.QuadrantFactory(ctx, stepPos);
                     for(var i = 0; i < balls.length; i++){
                         //Add to the map
                         map.add(balls[i]);
@@ -59,15 +87,37 @@
                             balls[i].step();
                             balls[i] = RunBall(balls[i], map, allowMovement);
                         }
+
                     }
 
                     ctx.beginPath();
                     ctx.clearAll();
+
+                    //Colorize the current cell
+                    if (mouseIn) {
+                        var targets = map.find(mouseX, mouseY);
+                        if (targets.length) {
+                            var target = targets[targets.length -1];
+                            ctx.save();
+                            ctx.fillStyle = "orange";
+                            ctx.beginPath();
+                            ctx.fillRect(target.x, target.y, target.sx, target.sy);
+                            ctx.restore();
+
+                        }
+                        debugger;
+                    }
+
+
+                    ctx.beginPath();
+                    //ctx.clearAll();
                     for(var i = 0; i < balls.length; i++){
                         balls[i] = RenderBall(balls[i], map, ctx)
                     }
-                    //map.render(ctx);
+                    map.render(ctx);
                     ctx.closePath();
+
+
                     setTimeout(runLogic,10);
 
                     var thisFrameFPS = 1000 / ((now=new Date) - lastUpdate);
