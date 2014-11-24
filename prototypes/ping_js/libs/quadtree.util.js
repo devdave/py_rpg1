@@ -1,22 +1,22 @@
 
     function GUID(){
         return new Date().getTime() +
-        (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1) + 
+        (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1) +
         (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1) +
         (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     }
-    
-    function Ball(maxX, maxY){
+
+    function Ball(origin_x, origin_y, radius, dx, dy){
         this.id = GUID();
-        this.x = Math.random()*maxX;
-        this.y =Math.random()*maxY;
-        this.sx = 60;
-        this.sy = 60;
-        this.dx =Math.random()*20 -10;
-        this.dy =Math.random()*20 -10;
+        this.x = origin_x;
+        this.y = origin_y;
+        this.sx = radius;
+        this.sy = radius;
+        this.dx = dx;
+        this.dy = dy;
     }
     Ball.prototype.bbox = function(){
-        return {"x": this.x-50, y:this.y-50,sx:this.sx,sy:this.sx}
+        return {"x": this.x-this.sx, y:this.y-this.sy,sx:this.sx,sy:this.sx}
     }
     Ball.prototype.step = function(){
         this.x += this.dx;
@@ -24,16 +24,20 @@
     }
 
     function ballFactory(maxX, maxY){
-        return new Ball(maxX, maxY)
+        var x = Math.random()*maxX,
+            y = Math.random()*maxY,
+            dx = Math.random()*20 -10,
+            dy = Math.random()*20 -10;
+        return new Ball(x, y, 60, dx, dy)
     }
-                
+
     /**
      *Unfortunately this closure is a performance bottleneck
      *but not sure how to work around it
      */
-    function RunBall(ball, map){      
-        
-        
+    function RunBall(ball, map){
+
+
         ball.dx = ball.dx * .5;
         ball.dy = ball.dy * .5;
         if(Math.abs(ball.dx) < .5){
@@ -42,18 +46,18 @@
         if(Math.abs(ball.dy) < .5){
             ball.dy = ball.dy > 0 ? .5 : -.5;
         }
-        
-        
+
+
         if(! ping.Lib.util.inside(ball.x, 0, 575)){
             ball.dx *= -1;
         }
         if(! ping.Lib.util.inside(ball.y, 0, 375)){
             ball.dy *= -1;
         }
-        
+
         return ball;
         }
-        
+
     function RenderBall(ball, map, ctx){
         var ballBoundBox = {};
         var Bbox = ball.bbox();
@@ -76,29 +80,30 @@
                             ctx.stroke();
                             ctx.restore();
                         }
-                        else if(dist<150){
-                            //ctx.save();
-                            //ctx.beginPath();
-                            //ctx.bezierCurveTo(ball.x, ball.y,300, 200, entity.x, entity.y );
-                            //ctx.closePath();
-                            //ctx.stroke();
-                        }
+                        //else if(dist<150){
+                        //    //ctx.save();
+                        //    //ctx.beginPath();
+                        //    //ctx.bezierCurveTo(ball.x, ball.y,300, 200, entity.x, entity.y );
+                        //    //ctx.closePath();
+                        //    //ctx.stroke();
+                        //}
+
                         if(dist < 16){
                             color = "red";
                             ball.dx *= -1.5;
                             ball.dy *= -1.5;
                             ball.x += ball.dx * 5;
                             ball.y += ball.dy * 5;
-                            
+
                             entity.dx *= -1.5;
                             entity.dy *= -1.5;
                             entity.x += entity.dx * 5;
                             entity.y += entity.dy * 5;
-                            
-                            
+
+
                             quad.entities[e] = entity;
                             break;
-                            
+
                         }
                     }
                 }
@@ -113,16 +118,16 @@
         ctx.fillStyle  = color;
         //ctx.strokeStyle = color;
         ctx.beginPath();
-        
+
         ctx.circle(ball.x,ball.y,10);
         ctx.closePath();
         ctx.fill();
         //ctx.fillRect(ball.x,ball.y,10,10);
         ctx.restore();
         return ball;
-    }   
-    
-    
+    }
+
+
     function zf( number )
     {
       var width = 3;
@@ -133,13 +138,13 @@
       }
       return number;
     }
-    
+
     function traversal(node, parent){
-            
+
             if(this instanceof Quadrant){
                 node = this;
             }
-            
+
             var liNode = "<li>";
             liNode += "\n " + node.name
                             + " - "
@@ -154,11 +159,11 @@
                             + ","
                             + zf(node.sy)
                             + "]";
-            
+
             var temp = node.loop(traversal);
             if(temp.length > 0){
                 var subTemp = temp.join("\n");
-                
+
                 liNode += "<ul>" + subTemp + "</ul>";
             }
             liNode += "</li>";

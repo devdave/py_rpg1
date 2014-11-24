@@ -1,9 +1,21 @@
-
+/**
+@file One of two impelementations of the Quadtree class.  TODO is consolidate
+them both.
+*/
+/**
+@namespace
+*/
 ping.Lib.util = ping.Lib.util || {};
-
+/**
+@function
+*/
 ping.Lib.util.inside = function(pos, low, high){
     return (pos > low & pos < high);
 }
+
+/**
+@function
+*/
 ping.Lib.util.insideBox = function(x,y, box){
     var eX = box.x || box[0],
         eY = box.y || box[1],
