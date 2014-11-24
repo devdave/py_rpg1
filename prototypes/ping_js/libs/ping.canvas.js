@@ -32,8 +32,6 @@ ping.Lib.CnvMan = function(){
      *@member {object}
      **/
      this.refs = {};
-     /** @member {Integer} **/
-     this.count = 0;
 }
 
 /**
@@ -42,11 +40,9 @@ Internal setter to assign a element to the ref's property
 @method */
 ping.Lib.CnvMan.prototype._set = function(id, ref){
    this.refs[id] = ref;
-   this.count += 1;
 }
 
 /**
-Internal setter to assign a element to the ref's property
 Returns a valid canvas element by it's id, if it exists.
 @method
 @param {string} id A valid canvas element id
@@ -95,7 +91,7 @@ ping.cMngr = new ping.Lib.CnvMan();
  *Utility to instantiate/retrieve the 2d Rendering context of canvas tags
  *
  *This is also a future safe measure in case the 2d Rendering context should ever change,
- *all of the add on methods can be bound at call time instead of compile time.
+ *all of the add on methods can be bound at run time instead of compile time.
 @function
 @param {string} elemId A valid canvas html id
 @returns {CanvasRenderingContext2D}
@@ -190,11 +186,12 @@ CanvasRenderingContext2D.prototype.line = function(p1, p2){
 CanvasRenderingContext2D.prototype.drawLine = CanvasRenderingContext2D.prototype.line
 
 /**
-Utility to draw a line
+Utility to draw a circle
 @function
 @param {float} x Origin x
 @param {float} y Origin y
 @param {float} radius
+@deprecated Waste of cycles
 */
 CanvasRenderingContext2D.prototype.circle = function(x, y, radius) {
                         return this.arc(x, y, radius, 0, Math.PI* 2, true);
@@ -206,6 +203,7 @@ Utility to draw a circle with begin & close path (equiv to stroke)
 @param {float} x Origin x
 @param {float} y Origin y
 @param {float} radius
+@deprecated Waste of cycles
 */
 CanvasRenderingContext2D.prototype.drawCircle = function(x, y, radius){
                         this.beginPath();
@@ -268,6 +266,7 @@ CanvasRenderingContext2D.prototype.clearAll = function(color){
 /**
 Shortcut to get the canvas height
 @function
+@deprecated
 */
 CanvasRenderingContext2D.prototype.maxHeight = function(){
      return this.canvas.clientHeight;
@@ -276,6 +275,7 @@ CanvasRenderingContext2D.prototype.maxHeight = function(){
 /**
 Shortcut to get the canvas width
 @function
+@deprecated
 */
 CanvasRenderingContext2D.prototype.maxWidth = function(){
      return this.canvas.clientWidth;
