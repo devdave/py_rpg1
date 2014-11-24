@@ -64,3 +64,4 @@ py_rpg/app.pyc
 *.komodotool
 *.tar
 
+prototypes/ping_js/compile.bat
