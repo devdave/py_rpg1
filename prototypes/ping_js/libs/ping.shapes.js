@@ -3,7 +3,11 @@
 @namespace
 */
 ping.Lib = ping.Lib || {};
+ping.Shapes = ping.Shapes || {};
 //ping.namespace("ping.Lib");
+
+
+
 
 /**
   Return the distance between two points
@@ -108,7 +112,7 @@ ping.Lib.Line.prototype.intersect = function (o) {
 /**
 @namespace
 */
-ping.lib.box = ping.lib.box || {}
+ping.Lib = ping.Lib || {};
 //ping.namespace("ping.lib.box");
 
 //ping.lib.box.Intersect =
