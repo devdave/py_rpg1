@@ -1,25 +1,30 @@
-
 /**
 @file One of two impelementations of the Quadtree class.  TODO is consolidate
 them both.
 */
-
 /**
 @namespace
 */
 ping.Lib.util = ping.Lib.util || {};
 
 /**
+Given a single dimension line, is pos inside of it?
 @function
+@param {Float} pos A number on a line
+@param {Float} low start of a line
+@param {Float} high end of a line
 */
 ping.Lib.util.inside = function(pos, low, high){
     return (pos > low & pos < high);
 }
 
 /**
+Expansion of @see inside to check if a point is inside a rectangle
 @function
+@param {Object|List} box A rectangular space to check again
 */
 ping.Lib.util.insideBox = function(x,y, box){
+    /** @TODO consolidate, this is wasted time */
     var eX = box.x || box[0];
     var eY = box.y || box[1];
     var sx = box.sx || box[2];
@@ -185,6 +190,7 @@ ping.Lib.Quadrant.prototype.add = function(entity){
 
     //Has this quadrant divided already?
     if(this.entities == null){
+        /** @TODO there should be a way to optimize this! */
         var failed = this.lrAddIf(entity) || this.urAddIf(entity) || this.llAddIf(entity) || this.ulAddIf(entity);
 
         return failed;
@@ -209,9 +215,13 @@ ping.Lib.Quadrant.prototype.add = function(entity){
 @function
  */
 ping.Lib.Quadrant.prototype.divide = function(){
-    var entity = null;
-    while(entity = this.entities.pop()){
-        var failed = this.lrAddIf(entity) || this.urAddIf(entity) || this.llAddIf(entity) || this.ulAddIf(entity)
+    var entity = this.entities.pop();
+    if (entity) {
+
+        do {
+            var failed = this.lrAddIf(entity) || this.urAddIf(entity) || this.llAddIf(entity) || this.ulAddIf(entity)
+            this.entities.pop();
+        } while(entity);
     }
 }
 
@@ -242,7 +252,8 @@ ping.Lib.Quadrant.prototype.loop = function(block){
  *Find all Quadrants from root to bottom tier that lead to
  *an entity
  *
- *@param {Integer} x
+@constructor
+@param {Integer} x
  *@param {Integer} y
  *@returns {Array} returns all quadrants from top to bottom that contain an entity
  */
