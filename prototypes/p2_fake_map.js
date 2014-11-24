@@ -34,7 +34,7 @@ var gridW = 30,
             10:{
 
                 4:fakeMap[0],
-                5:fake[2]
+                5:fakeMap[2]
             },
             11: {
                 4:fakeMap[1],
