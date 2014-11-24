@@ -3,17 +3,24 @@
     <head>
         <title>Map prototype 1</title>
         <style>
-            canvas {
+            #canvas_map {
                 border: solid thin black;
                 width: 500px;
                 height: 500px;
             }
+            #viewport {
+                border: solid thin black;
+                width: 100px;
+                height: 100px;
+            }
         </style>
         <script src="./p2_fake_map.js"></script>
         <script src="./map_canvas2.js"></script>
+        <script src="./ping_js/ping.js"></script>
     </head>
     <body>
-        <canvas id="map_cnv"></canvas>
+        <canvas id="canvas_map"></canvas>
+        <canvas id="viewport"></canvas>
         <div id="controls">
             <button name="go" value="">up</button>
             <button name="go" value="">north</button>

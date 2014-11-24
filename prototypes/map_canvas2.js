@@ -1,16 +1,14 @@
 /**
-    Prototype 1 goals
+    Prototype 2 goals
 
-    Make a grid of squares proportioned to the canvas tag.
-    Encapsulate the building logic
-    space the squares out so that a thin grid of lines connects to the
-    center of each square.
+    Build a GameMap object that holds a list of
+    all rooms.
 
-    keep forgetting this crap
-    X == width
-    Y == height
-
+    Setup 2 canvas tags
 */
+
+
+
 function renderBox(ctx, x, y, h, w, fill) {
     "use strict";
 
@@ -78,7 +76,7 @@ function interconnectLines(ctx,
 
 function initialize_map(map, gridColCnt, gridRowCnt) {
     "use strict";
-    var map_cnv = document.getElementById("map_cnv"),
+    var map_cnv = document.getElementById("canvas_map"),
         map_ctx = map_cnv.getContext("2d"),
         cWidth = map_cnv.width,
         cHeight = map_cnv.height,
