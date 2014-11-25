@@ -251,8 +251,8 @@ Quadrant.prototype.findBox = function(box){
     }
 }
 
-function QuadrantFactory(ctx, max){
-    return new Quadrant(0,0, ctx.canvas.clientWidth, ctx.canvas.clientHeight, max || 4 )
+function QuadrantFactory (ctx, x, y, max) {
+    return new Quadrant(0,0, x, y, max || 4 );
 }
 
 
