@@ -10,7 +10,7 @@
     },
     "source": {
         "include": [".", "./libs", ".\\libs", "libs"],
-        "includePattern": "^ping.+js",
+        "includePattern": ".+\\.js(doc)?$",
         "excludePattern": "(^|\\/|\\\\)_"
     },
     "plugins": [],
