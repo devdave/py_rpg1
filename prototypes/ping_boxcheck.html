@@ -7,7 +7,10 @@
     </head>
     <body>
         <canvas width="600" height="400" id="boxCheck"></canvas>
+
         <ul style="float:right" id="console"></ul>
+
+        <textarea style="float:left; height: 900px; width: 800px;" id="results"></textarea>
         <script>
             ping.namespace("ping.box.intersects");
         </script>
@@ -75,15 +78,17 @@
 
                 for(var ii = 0; ii<index.length; ii++){
                     var otherboxName = index[ii];
+                    if (otherboxName == myboxName) {
+                        continue;
+                    }
+
                     if (matrix[myboxName][otherboxName] == undefined) {
                         matrix[myboxName][otherboxName] = {}
                     }
 
                     otherBox = boxes[otherboxName];
 
-                    if (otherboxName == myboxName) {
-                        continue;
-                    }
+
                     matrix[myboxName][otherboxName] = ping.Lib.intersects.box(
                                 myBox,
                                 otherBox
@@ -115,6 +120,9 @@
 
             }
         console.log("done");
+        $(results).val(JSON.stringify(matrix, false, 2));
+        console.log(JSON.stringify(matrix, false, 2));
+
         })();
         </script>
     </body>
