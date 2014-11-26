@@ -260,7 +260,7 @@ Shortcut to clear the entire canvas
 @function
 */
 CanvasRenderingContext2D.prototype.clearAll = function(color){
-                        this.clearRect(0,0,this.canvas.clientWidth, this.canvas.clientHeight );
+                        this.clearRect(0,0,this.canvas.width, this.canvas.height );
                         }
 
 /**
