@@ -362,17 +362,17 @@ ping.Lib.Quadrant.prototype.find = function(x,y){
  *@returns {Array} returns all entities from inside box
  */
 ping.Lib.Quadrant.prototype.findBox = function(box){
-
-    var temp = [];
+    "use strict";
+    var temp = [], result, zone;
 
     if (ping.Lib.intersects.box(this, box)) {
         if (this.entity) {
             temp = temp.concat([this.entity])
         } else {
             for( var i = 0; i < this.zones.length; i++){
-                var zone = this.zones[i];
-                if (this[zone]) {
-                    result = this[zone].findBox(box);
+                zone = this[this.zones[i]];
+                if (zone) {
+                    result = zone.findBox(box);
                     temp = temp.concat(result);
                 }
             }
