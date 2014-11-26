@@ -14,9 +14,11 @@
                 height: 100px;
             }
         </style>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <script src="./p2_fake_map.js"></script>
         <script src="./map_canvas2.js"></script>
         <script src="./ping_js/ping.js"></script>
+
     </head>
     <body>
         <canvas id="canvas_map"></canvas>
@@ -35,7 +37,79 @@
 
     <script>
         (function(){
-            initialize_map(map_lookup, gridW, gridH);
+
+            var my_map = new GameMap(fakeMap),
+                canvas_map = document.getElementById("canvas_map"),
+                ctx_map = canvas_map.getContext("2d"),
+                canvas_view = document.getElementById("viewport"),
+                ctx_view = canvas_view.getContext("2d");
+                game_cols = fakeMap.cols,
+                game_rows = fakeMap.rows,
+                map_scalex = canvas_map.width / game_cols,
+                map_scaley = canvas_map.height / game_rows,
+                view_scalex = canvas_map.width / game_cols,
+                view_scaley = canvas_map.height / game_rows,
+                max_x = 2, max_y = 2,
+                player = {
+
+                    x: 0,
+                    y: 0
+
+                },
+                update = false;
+                ping.Lib.initInput();
+
+
+                function gameLoop() {
+                    "use strict";
+
+                    if (ping.Lib.Input.state.U) {
+                        player.y = Math.max(0, player.y - 1);
+                        update = true;
+                    }
+                    else if (ping.Lib.Input.state.D) {
+                        player.y = Math.min(fakeMap.rows -1, player.y +1);
+                        update = true;
+                    }
+
+                    if (ping.Lib.Input.state.L) {
+                        player.x = Math.max(0, player.x -1);
+                        update = true;
+                    }
+                    else if (ping.Lib.Input.state.R) {
+                        player.x = Math.min(fakeMap.cols - 1, player.x + 1);
+                        update = true;
+                    }
+
+
+                    if (update) {
+                        console.log(player.x, player.y);
+                        debugger;
+                        ctx_view.beginPath();
+                        ctx_view.clearAll();
+                        my_map.render(ctx_view, player.x, player.y, 1, 1);
+                        ctx_view.strokeRect(player.x * view_scalex, player.y * view_scaley, view_scalex, view_scaley);
+                        ctx_view.closePath();
+                        update = false;
+
+                    }
+
+                    setTimeout(gameLoop, 150);
+
+                }
+
+
+
+            my_map.render(ctx_map);
+
+            ctx_view.beginPath();
+            my_map.render(ctx_view, player.x, player.y, 1, 1);
+            ctx_view.closePath();
+
+            gameLoop();
+
+
+
         })();
     </script>
 
