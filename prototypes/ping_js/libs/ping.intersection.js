@@ -10,36 +10,58 @@ ping.Lib.intersects = ping.Lib.intersects || {}
 
 
 /**
+  This isn't labeled right, I want to know if any given point
+  on box b's corners is inside A
+
+  //Sourced from
+  http://gamedev.stackexchange.com/questions/586/what-is-the-fastest-way-to-work-out-2d-bounding-box-intersection
+  @TODO test!
+*/
+ping.Lib.intersects.boxContainsBox = function(a, b) {
+    return (Math.abs(a.x - b.x) * 2 < (a.sx + b.sx)) &&
+            (Math.abs(a.y - b.y) * 2 < (a.sy + b.sy));
+}
+
+/**
 This relatively insane function is meant to see if two
 boxes intersect each other
 @param {object} a should be {x:#,y:#,sx:#,sy#} where s vars are short for (s)ize
 @param {object} b should be {x:#,y:#,sx:#,sy#} where s vars are short for (s)ize
 @returns {Boolean}
 @function
+@deprecated
 */
 ping.Lib.intersects.box = function(a,b){
-                //b = 1 - 4
-               //a = A
-               //AUa upper left corner
-               if(a.x >= b.x && a.x <= b.x + b.sx && a.y >= b.y && a.y <= b.y + b.sy) return true;
-               //AUb upper right corner
-               if(a.x + a.sx >= b.x && a.x + a.sx <= b.x + b.sx  && a.y >= b.y && a.y <= b.y + b.sy ) return true;
-               //AUc lower right corner
-               if(a.x + a.sx >= b.x && a.x + a.sx <= b.x + b.sx && a.y + a.sy >= b.y && a.y + a.sy <= b.y + b.sy) return true;
-               //AUd lower left corner
-               if(a.x >= b.x && a.x <= b.x + b.sx && a.y + a.sy >= b.y && a.y + a.sy <= b.y + b.sy) return true;
-
-               if(b.x >= a.x && b.x <= a.x + a.sx && b.y >= a.y && b.y <= a.y + a.sy) return true;
-               //AUb upper right corner
-               if(b.x + b.sx >= a.x && b.x + b.sx <= a.x + a.sx  && b.y >= a.y && b.y <= a.y + a.sy ) return true;
-               //AUc lower right corner
-               if(b.x + b.sx >= a.x && b.x + b.sx <= a.x + a.sx && b.y + b.sy >= a.y && b.y + b.sy <= a.y + a.sy) return true;
-               //AUd lower left corner
-               if(b.x >= a.x && b.x <= a.x + a.sx && b.y + b.sy >= a.y && b.y + b.sy <= a.y + a.sy) return true;
-
-               return false;
-
-            }
+    return!( (b.x > (a.x+a.sx)) ||
+             ((b.x + b.sx) < a.x) ||
+             (b.y > (a.y + a.sy) ||
+             (b.y + b.sy) < a.y)
+    );
+}
+//ping.Lib.intersects.box = function(a,b){
+//                return ping.Lib.intersects.boxContainsBox(a,b);
+//                //b = 1 - 4
+//               //a = A
+//               //AUa upper left corner
+//               if(a.x >= b.x && a.x <= b.x + b.sx && a.y >= b.y && a.y <= b.y + b.sy) return true;
+//               //AUb upper right corner
+//               if(a.x + a.sx >= b.x && a.x + a.sx <= b.x + b.sx  && a.y >= b.y && a.y <= b.y + b.sy ) return true;
+//               //AUc lower right corner
+//               if(a.x + a.sx >= b.x && a.x + a.sx <= b.x + b.sx && a.y + a.sy >= b.y && a.y + a.sy <= b.y + b.sy) return true;
+//               //AUd lower left corner
+//               if(a.x >= b.x && a.x <= b.x + b.sx && a.y + a.sy >= b.y && a.y + a.sy <= b.y + b.sy) return true;
+//
+//               if(b.x >= a.x && b.x <= a.x + a.sx && b.y >= a.y && b.y <= a.y + a.sy) return true;
+//               //AUb upper right corner
+//               if(b.x + b.sx >= a.x && b.x + b.sx <= a.x + a.sx  && b.y >= a.y && b.y <= a.y + a.sy ) return true;
+//               //AUc lower right corner
+//               if(b.x + b.sx >= a.x && b.x + b.sx <= a.x + a.sx && b.y + b.sy >= a.y && b.y + b.sy <= a.y + a.sy) return true;
+//               //AUd lower left corner
+//               if(b.x >= a.x && b.x <= a.x + a.sx && b.y + b.sy >= a.y && b.y + b.sy <= a.y + a.sy) return true;
+//
+//               return false;
+//
+//            }
 
 /**
 @todo Come back to these
