@@ -1008,12 +1008,14 @@ ping.Lib.Quadrant.prototype.divide = function(new_entity){
 }
 
 
-ping.Lib.Quadrant.prototype.render = function(ctx, depth){
-    ctx.strokeRect(this.x, this.y, this.sx, this.sy);
-    if(this.ul) this.ul.render(ctx, depth -1);
-    if(this.ur) this.ur.render(ctx, depth -1);
-    if(this.lr) this.lr.render(ctx, depth -1);
-    if(this.ll) this.ll.render(ctx, depth -1);
+ping.Lib.Quadrant.prototype.render = function(ctx, depth, sx, sy){
+    var px = sx || 1,
+        py = sy || 1;
+    ctx.strokeRect(this.x * px, this.y * py, px , py);
+    if(this.ul) this.ul.render(ctx, depth -1, sx, sy);
+    if(this.ur) this.ur.render(ctx, depth -1, sx, sy);
+    if(this.lr) this.lr.render(ctx, depth -1, sx, sy);
+    if(this.ll) this.ll.render(ctx, depth -1, sx, sy);
 
 }
 
@@ -1065,17 +1067,17 @@ ping.Lib.Quadrant.prototype.find = function(x,y){
  *@returns {Array} returns all entities from inside box
  */
 ping.Lib.Quadrant.prototype.findBox = function(box){
-
-    var temp = [];
+    "use strict";
+    var temp = [], result, zone;
 
     if (ping.Lib.intersects.box(this, box)) {
         if (this.entity) {
             temp = temp.concat([this.entity])
         } else {
             for( var i = 0; i < this.zones.length; i++){
-                var zone = this.zones[i];
-                if (this[zone]) {
-                    result = this[zone].findBox(box);
+                zone = this[this.zones[i]];
+                if (zone) {
+                    result = zone.findBox(box);
                     temp = temp.concat(result);
                 }
             }
