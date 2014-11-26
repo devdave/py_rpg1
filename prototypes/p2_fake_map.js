@@ -14,12 +14,21 @@ function r(x,y, connections ) {
 var gridW = 30,
     gridH = 30,
 
-    fakeMap = [
-        r(10,4,{s:3, e:2}),
-        r(11,4,{s:4,w:1}),
-        r(10,5,{n:1,e:2}),
-        r(11,5,{n:2,w:3}),
-    ];
+    fakeMap = {
+        cols:5,
+        rows:5,
+        //rooms: [
+        //    [r(10,4,{s:3, e:2}), r(11,4,{s:4,w:1})],
+        //    [r(10,5,{n:1,e:2}), r(11,5,{n:2,w:3})]
+        //]
+        rooms: [
+            [{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},],
+            [{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},],
+            [{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},],
+            [{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},],
+            [{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},{"foo":"bar"},],
+        ]
+    };
 
     map_lookup = {
         gridW: 30,
