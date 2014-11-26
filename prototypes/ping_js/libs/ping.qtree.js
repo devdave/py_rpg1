@@ -303,12 +303,14 @@ ping.Lib.Quadrant.prototype.divide = function(new_entity){
 }
 
 
-ping.Lib.Quadrant.prototype.render = function(ctx, depth){
-    ctx.strokeRect(this.x, this.y, this.sx, this.sy);
-    if(this.ul) this.ul.render(ctx, depth -1);
-    if(this.ur) this.ur.render(ctx, depth -1);
-    if(this.lr) this.lr.render(ctx, depth -1);
-    if(this.ll) this.ll.render(ctx, depth -1);
+ping.Lib.Quadrant.prototype.render = function(ctx, depth, sx, sy){
+    var px = sx || 1,
+        py = sy || 1;
+    ctx.strokeRect(this.x * px, this.y * py, px , py);
+    if(this.ul) this.ul.render(ctx, depth -1, sx, sy);
+    if(this.ur) this.ur.render(ctx, depth -1, sx, sy);
+    if(this.lr) this.lr.render(ctx, depth -1, sx, sy);
+    if(this.ll) this.ll.render(ctx, depth -1, sx, sy);
 
 }
 
