@@ -15,7 +15,7 @@ Given a single dimension line, is pos inside of it?
 @param {Float} high end of a line
 */
 ping.Lib.util.inside = function(pos, low, high){
-    return (pos > low & pos < high);
+    return (pos >= low && pos <= high);
 }
 
 /**
@@ -51,8 +51,10 @@ ping.Lib.Quadrant = function(x, y, sx, sy, depth, name){
     this.sx = sx;
     this.sy = sy;
     this.depth = depth - 1;
-    this.entities = [];
+    //this.entities = [];
+    this.entity = undefined;
     this.name = name || "root";
+    this.zones = ['ul', 'ur', 'll', 'lr'];
     /**
     Upper left quadrant
     @member  {Quadrant}*/
@@ -83,7 +85,7 @@ ping.Lib.Quadrant.prototype.ulAddIf = function(entity){
     //step 1 does this belong here
     var box = [this.x, this.y, this.sx/2, this.sy / 2];
     if( ping.Lib.util.insideBox(entity.x, entity.y, box) ){
-        if(this.ul == null){
+        if(this.ul === null){
             this.ul = new ping.Lib.Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->ul");
         }
         this.ul.add(entity);
@@ -100,7 +102,7 @@ ping.Lib.Quadrant.prototype.urAddIf = function(entity){
     //step 1 does this belong here
     var box = [this.x + this.sx/2, this.y, this.sx/2, this.sy / 2];
     if( ping.Lib.util.insideBox(entity.x, entity.y, box) ){
-        if(this.ur == null){
+        if(this.ur === null){
 
             this.ur = node = new ping.Lib.Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->ur");
         }
@@ -119,7 +121,7 @@ ping.Lib.Quadrant.prototype.llAddIf = function(entity){
     //step 1 does this belong here
     var box = [this.x, this.y + this.sy / 2, this.sx/2, this.sy / 2];
     if( ping.Lib.util.insideBox(entity.x, entity.y, box) ){
-        if(this.ll == null){
+        if(this.ll === null){
 
             this.ll = new ping.Lib.Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->ur");
         }
@@ -138,7 +140,7 @@ ping.Lib.Quadrant.prototype.lrAddIf = function(entity){
     //step 1 does this belong here
     var box = [this.x + this.sx/2, this.y + this.sy / 2, this.sx/2, this.sy / 2];
     if( ping.Lib.util.insideBox(entity.x, entity.y, box) ){
-        if(this.lr == null){
+        if(this.lr === null){
 
             this.lr = new ping.Lib.Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->lr");
         }
@@ -151,11 +153,14 @@ ping.Lib.Quadrant.prototype.lrAddIf = function(entity){
 /**
  *Does this quadrant contain this point?
  *
+ @private
  *@TODO extract this to possible Shapes library
  *@param {Integer} x is either an X coordinate or a point
  *@param {Integer} y
+ @deprecated
  */
 ping.Lib.Quadrant.prototype.contains  = function(x, y){
+    throw new Error("Deprecated!");
     return (x > this.x  && x < this.x + this.sx)
         && (y > this.y  && y < this.y + this.sy);
 }
@@ -168,7 +173,14 @@ ping.Lib.Quadrant.prototype.contains  = function(x, y){
  *@param {Integer} y
  */
 ping.Lib.Quadrant.prototype.containsBox  = function(box){
-    return ping.Lib.intersects.box(this,box);
+    return  ((box.x == this.x && box.x == this.x + this.sx )&&
+             (box.y == this.y && box.y == this.y + this.sy)
+            )
+            ||
+            ((box.x >= this.x && box.x < this.x + this.sx )&&
+             (box.y >= this.y && box.y < this.y + this.sy)
+            )
+    //return ping.Lib.intersects.box(this,box);
     /**
      *AxMin > BxMax and AxMax > BxMin
         AyMin > ByMax and AyMax > ByMin
@@ -176,6 +188,57 @@ ping.Lib.Quadrant.prototype.containsBox  = function(box){
     //return (
     //return (this.x > box.x + box.sx  && x < this.x + this.sx)
     //    && (y > this.y  && y < this.y + this.sy);
+}
+
+ping.Lib.Quadrant.prototype.getAll = function(){
+    var temp = [],
+        zones = ['ul','ur','lr','ll'];
+
+    if (this.entity != null) {
+        temp.push(this.entity);
+    }
+    else{
+        for(var i = 0; i < zones.length; i++) {
+            if (this[zones[i]] != null) {
+                temp = temp.concat(this[zones[i]].getAll());
+            }
+        }
+    }
+    return temp;
+}
+
+
+/**
+    Spin trough possible zones and add the entity to the appropriate spot.
+
+    @private
+    @param {Object} entity
+*/
+ping.Lib.Quadrant.prototype.addIf = function(entity) {
+    var box,
+        zones = {
+            ul: [this.x, this.y, this.sx/2, this.sy / 2],
+            ur: [this.x + this.sx/2, this.y, this.sx/2, this.sy / 2],
+            ll: [this.x, this.y + this.sy / 2, this.sx/2, this.sy / 2],
+            lr: [this.x + this.sx/2, this.y + this.sy / 2, this.sx/2, this.sy / 2]
+        },
+        zone;
+
+    for(zone in zones){
+        if (zones.hasOwnProperty(zone)) {
+            box = zones[zone];
+            if (entity.x >= box[0] && entity.x < box[0] + box[2] &&
+                entity.y >= box[1] && entity.y < box[1] + box[3]) {
+                if (this[zone] === null) {
+                    this[zone] = new ping.Lib.Quadrant(box[0], box[1], box[2], box[3],   this.depth - 1, this.name + "->" + zone);
+                }
+                this[zone].add(entity);
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 
@@ -186,43 +249,57 @@ ping.Lib.Quadrant.prototype.containsBox  = function(box){
  *property {x,y,sx,sy} All information needed to map out a box shape
  @function
  */
-ping.Lib.Quadrant.prototype.add = function(entity){
+ping.Lib.Quadrant.prototype.add = function(new_entity){
+    "use strict";
+    var box,
+        result = false;
 
     //Has this quadrant divided already?
-    if(this.entities == null){
-        /** @TODO there should be a way to optimize this! */
-        var failed = this.lrAddIf(entity) || this.urAddIf(entity) || this.llAddIf(entity) || this.ulAddIf(entity);
+    if(this.entity === null){
+        result = this.addIf(new_entity);
 
-        return failed;
-    }
-    //Should this quadrant be divided?
-    if(this.entities.length >= 1 && this.depth > 1 ){
-        //This Quadrant has become crowded, flush out all entities down the next level
-        this.entities.push(entity);
-        this.divide();
-        this.entities = null;
+        if (result == false) {
+            throw new ping.Exception("Unable to find zone to add entity!", [this, new_entity]);
+        } else{
+            return result;
+        }
+
+
+    } else {
+        if (this.entity) {
+            this.divide(new_entity);
+        } else{
+            this.entity = new_entity;
+        }
         return true;
-    }else{
-        //No, push entity to this Quadrant
-        this.entities.push(entity);
-        return true;
     }
+
+    throw new ping.Exception("Unable to add entity!", [this, entity]);
+    return false;
+
 }
 
 /**
- *Divide current Quadrant
- *
+Divide current Quadrant
 @function
+@private
  */
-ping.Lib.Quadrant.prototype.divide = function(){
-    var entity = this.entities.pop();
-    if (entity) {
+ping.Lib.Quadrant.prototype.divide = function(new_entity){
+    var failures = [],
+        zones = ['lr','ur','ll','lr'],
+        added,
+        result;
 
-        do {
-            var failed = this.lrAddIf(entity) || this.urAddIf(entity) || this.llAddIf(entity) || this.ulAddIf(entity)
-            this.entities.pop();
-        } while(entity);
+    result = this.addIf(new_entity);
+    if (result == false) {
+        throw new ping.Exception("Could no divide Quadrant! Entity would be lost!", [this, new_entity, i]);
     }
+    old_result = this.addIf(this.entity);
+    if (result == false) {
+        throw new ping.Exception("Could no divide Quadrant! Entity would be lost!", [this, entity, i]);
+    }
+
+    this.entity = null;
 }
 
 
@@ -249,20 +326,21 @@ ping.Lib.Quadrant.prototype.loop = function(block){
 }
 
 /**
- *Find all Quadrants from root to bottom tier that lead to
- *an entity
+Find all Quadrants from root to bottom tier that contain a specific point.
  *
 @constructor
 @param {Integer} x
- *@param {Integer} y
- *@returns {Array} returns all quadrants from top to bottom that contain an entity
+@param {Integer} y
+@returns {Array} returns all quadrants from top to bottom that contain an entity
+
  */
 ping.Lib.Quadrant.prototype.find = function(x,y){
     var myTargets = [];
 
-    if(this.contains(x,y)){
+    if(x >= this.x && x < this.x + this.sx &&
+       y >= this.y && y < this.y + this.sy){
         myTargets.push(this);
-        if(this.entities == null){
+        if(this.entity === null){
             var temp = [];
             if(this.ul)     temp = temp.concat( this.ul.find(x,y, myTargets));
             if(this.ur )    temp = temp.concat( this.ur.find(x,y, myTargets));
@@ -275,26 +353,33 @@ ping.Lib.Quadrant.prototype.find = function(x,y){
 }
 
 /**
- *Find all Quadrants from root to bottom tier that lead to
+ *Find all entities inside the box
  *an entity
  *
  *@param {Object} box has x,y and sx,sy properties
- *@returns {Array} returns all quadrants from top to bottom that contain an entity
+ *@returns {Array} returns all entities from inside box
  */
 ping.Lib.Quadrant.prototype.findBox = function(box){
 
-    if(this.entities == null){
-            var temp = [];
-            if(this.ul  && this.ul.containsBox(box))    temp = temp.concat( this.ul.findBox(box));
-            if(this.ur  && this.ur.containsBox(box))    temp = temp.concat( this.ur.findBox(box));
-            if(this.lr  && this.lr.containsBox(box))    temp = temp.concat( this.lr.findBox(box));
-            if(this.ll  && this.ll.containsBox(box))    temp = temp.concat( this.ll.findBox(box));
-            return temp;
-    }else{
-        return this.entities;
+    var temp = [];
+
+    if (ping.Lib.intersects.box(this, box)) {
+        if (this.entity) {
+            temp = temp.concat([this.entity])
+        } else {
+            for( var i = 0; i < this.zones.length; i++){
+                var zone = this.zones[i];
+                if (this[zone]) {
+                    result = this[zone].findBox(box);
+                    temp = temp.concat(result);
+                }
+            }
+        }
+
     }
+    return temp;
 }
 
-ping.QuadrantFactory = function (ctx, max){
-    return new ping.Lib.Quadrant(0,0, ctx.canvas.clientWidth, ctx.canvas.clientHeight, max || 4 )
+ping.QuadrantFactory = function(width, height, max) {
+    return new ping.Lib.Quadrant(0,0, width, height, max || 4 );
 }
