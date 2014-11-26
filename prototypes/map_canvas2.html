@@ -36,6 +36,8 @@
 
 
     <script>
+
+
         (function(){
 
             var my_map = new GameMap(fakeMap),
@@ -47,8 +49,8 @@
                 game_rows = fakeMap.rows,
                 map_scalex = canvas_map.width / game_cols,
                 map_scaley = canvas_map.height / game_rows,
-                view_scalex = canvas_map.width / game_cols,
-                view_scaley = canvas_map.height / game_rows,
+                view_scalex = canvas_view.width / game_cols,
+                view_scaley = canvas_view.height / game_rows,
                 max_x = 2, max_y = 2,
                 player = {
 
@@ -57,18 +59,80 @@
 
                 },
                 update = false;
+                console.log({
+                    my_map: my_map,
+                    canvas_map: canvas_map,
+                    ctx_map: ctx_map,
+                    canvas_view: canvas_view,
+                    ctx_view: ctx_view,
+                    game_cols: game_cols,
+                    game_rows: game_rows,
+                    map_scalex: map_scalex,
+                    map_scaley: map_scaley,
+                    view_scalex: view_scalex,
+                    view_scaley: view_scaley,
+                    max_x: max_x,
+                    max_y: max_y,
+                    player: player
+                });
                 ping.Lib.initInput();
+
+                function clearView() {
+                    ctx_view.beginPath();
+                    ctx_view.clearAll();
+                    ctx_view.closePath();
+                }
+
+                function redrawView() {
+                    console.log("player", player);
+                    clearView();
+
+                    //Player should not be out of bounds
+                    player.x = Math.max(0, player.x);
+                    player.y = Math.max(0, player.y);
+                    player.x = Math.min(game_cols, player.x);
+                    player.y = Math.min(game_rows, player.y);
+
+                    var tiles = my_map.grid.findBox({
+                            x:Math.min(2, player.x),
+                            y:Math.min(2, player.y),
+                            sx:2,
+                            sy:2
+                        }),
+                        vbox_width = ctx_view.canvas.width / 3,
+                        vbox_height = ctx_view.canvas.height / 3;
+
+                    console.log(84, tiles.length, player);
+                    ctx_view.save();
+
+
+                    for(var i = 0; i < tiles.length; i++){
+                        ctx_view.beginPath();
+                        ctx_view.fillStyle = tiles[i].fillStyle;
+                        ctx_view.fillRect(
+                            (tiles[i].x - player.x) * vbox_width,
+                            (tiles[i].y - player.y) * vbox_height,
+                            vbox_width,
+                            vbox_height
+                        );
+                        ctx_view.closePath();
+                    }
+
+
+
+                }
 
 
                 function gameLoop() {
                     "use strict";
+                    var tiles;
 
                     if (ping.Lib.Input.state.U) {
-                        player.y = Math.max(0, player.y - 1);
+                        player.y -= 1
                         update = true;
                     }
                     else if (ping.Lib.Input.state.D) {
-                        player.y = Math.min(fakeMap.rows -1, player.y +1);
+                        player.y += 1;
                         update = true;
                     }
 
@@ -77,21 +141,14 @@
                         update = true;
                     }
                     else if (ping.Lib.Input.state.R) {
-                        player.x = Math.min(fakeMap.cols - 1, player.x + 1);
+                        player.x = Math.min(fakeMap.cols, player.x + 1);
                         update = true;
                     }
 
 
                     if (update) {
-                        console.log(player.x, player.y);
-                        debugger;
-                        ctx_view.beginPath();
-                        ctx_view.clearAll();
-                        my_map.render(ctx_view, player.x, player.y, 1, 1);
-                        ctx_view.strokeRect(player.x * view_scalex, player.y * view_scaley, view_scalex, view_scaley);
-                        ctx_view.closePath();
+                        redrawView();
                         update = false;
-
                     }
 
                     setTimeout(gameLoop, 150);
@@ -103,8 +160,27 @@
             my_map.render(ctx_map);
 
             ctx_view.beginPath();
-            my_map.render(ctx_view, player.x, player.y, 1, 1);
-            ctx_view.closePath();
+            //my_map.render(ctx_view, player.x, player.y, 1, 1);
+            var tiles = my_map.grid.findBox({x:0, y:0 , sx: 2, sy: 2}),
+                low_x, low_y, adj_x, adj_y,
+                cheight = ctx_view.canvas.height,
+                vHeight = cheight / 3,
+
+                cwidth = ctx_view.canvas.width,
+                vWidth = cwidth / 3;
+
+            ctx_view.save();
+
+            for (var a = 0; a < tiles.length; a++) {
+                var tile = tiles[a];
+                ctx_view.beginPath();
+                ctx_view.fillStyle = tile.fillStyle;
+                ctx_view.fillRect(tile.x * vWidth, tile.y * vHeight, vWidth, vHeight);
+                ctx_view.closePath();
+            }
+
+
+            ctx_view.restore();
 
             gameLoop();
 
