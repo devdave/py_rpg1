@@ -1,5 +1,5 @@
 
-GameTile = function(col, row, parent, fillStyle) {
+GameTile = function(col, row, parent, fillStyle, index) {
     /**
     GameTile doesn't know the size of the canvas
     it's going to be so instead it knows what position it
@@ -15,6 +15,7 @@ GameTile = function(col, row, parent, fillStyle) {
     this.fillStyle = fillStyle;
 
     this.parent = parent;
+    this.index = index;
 }
 
 GameTile.prototype.render = function(ctx, scale_x, scale_y) {
@@ -34,17 +35,18 @@ GameMap = function(map_data) {
     this.grid = ping.QuadrantFactory(this.width, this.height);
     this.elements = [];
 
-    var colors = ["red","blue","green","yellow", "orange"],
-        row, col, myColor, debug;
+    var colors = ["red","blue","green","pink", "orange"],
+        row, col, myColor, debug, index = 0;
 
     for (row = 0; row < this.height; row++) {
         alert("stop!");
         for(col = 0; col < this.width; col++){
             alert("stop!");
             myColor = colors[Math.floor(Math.random() * colors.length)];
-            var tile = new GameTile(col, row, parent, myColor );
+            var tile = new GameTile(col, row, parent, myColor, index);
             this.grid.add(tile);
             this.elements.push(tile);
+            index += 1
         }
     }
     debug = this.grid.getAll();
