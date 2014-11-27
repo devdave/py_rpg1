@@ -177,13 +177,38 @@
 
                 }
 
+                function renderMap(ctx, grid, my_player) {
+                        //Figure out how wide and tall are elements are
+                    var tile_sx = ctx.canvas.width / grid.width,
+                        tile_sy = ctx.canvas.height / grid.height,
+                        px = my_player.x * tile_sx + (tile_sx / 2),
+                        py = my_player.y * tile_sy + (tile_sy / 2),
+                        x = clamp(px, 0, ctx.canvas.width - (tile_sx / 2)) ,
+                        y = clamp(py, 0, ctx.canvas.height - (tile_sy / 2)),
+                        start = (Math.PI/180) * 0,
+                        end   = (Math.PI/180) * 360;
+
+                    ctx.save()
+                    grid.render(ctx);
+                    ctx.beginPath();
+                    ctx.fillStyle = "white";
+
+                    ctx.arc(x,y,5, start, end);
+                    ctx.fill();
+                    ctx.closePath();
+                    ctx.restore();
+
+                }
+
 
                 function gameLoop(move_x, move_y) {
                     "use strict";
 
                     player.x = clamp(player.x + move_x, 0, my_map.width);
                     player.y = clamp(player.y + move_y, 0, my_map.height);
+
                     redrawView();
+                    renderMap(ctx_map, my_map, player );
 
                     //setTimeout(gameLoop, 150);
 
@@ -191,9 +216,7 @@
 
 
 
-            my_map.render(ctx_map);
 
-            gameLoop(0,0);
 
             function moveIt(direction){
                 switch(direction) {
