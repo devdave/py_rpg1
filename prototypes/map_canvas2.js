@@ -27,11 +27,11 @@ GameTile.prototype.render = function(ctx, scale_x, scale_y) {
 }
 
 
-GameMap = function(map_data) {
+GameMap = function(max_width, max_height) {
     "use strict";
 
-    this.width = map_data.cols;
-    this.height = map_data.rows;
+    this.width = max_width;
+    this.height = max_height;
     this.grid = ping.QuadrantFactory(this.width, this.height);
     this.elements = [];
 
