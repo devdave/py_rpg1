@@ -39,9 +39,7 @@ GameMap = function(map_data) {
         row, col, myColor, debug, index = 0;
 
     for (row = 0; row < this.height; row++) {
-        alert("stop!");
         for(col = 0; col < this.width; col++){
-            alert("stop!");
             myColor = colors[Math.floor(Math.random() * colors.length)];
             var tile = new GameTile(col, row, parent, myColor, index);
             this.grid.add(tile);
