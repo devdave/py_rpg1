@@ -44,17 +44,46 @@ GameTile.prototype.render = function(ctx, scale_x, scale_y) {
     ctx.rect(x, y, scale_x, scale_y);
 }
 
-function c2i(x,y, width, height) {
+
+GameTile.prototype.findNeighbors = function() {
+    "use strict";
+    var found = {count:0},
+        delta,
+        index;
+
+
+    for(var dir in this.geo_rose){
+        if (this.geo_rose.hasOwnProperty(dir) == false ) continue;
+        delta = this.geo_rose[dir];
+
+        index = ping.Math.c2i(this.x + delta.x,
+                              this.y + delta.y,
+                              this.parent.width,
+                              this.parent.height )
+        if (index > this.parent.elements.length || index < 0) {
+            continue;
+        }
+        found[dir] = this.parent.elements[index];
+        found.count += 1;
+
+    }
+    this.neighbors = found;
+
+    return found;
 
 }
 
-GameTile.prototype.neighbors = function() {
+GameTile.prototype.go = function(dir) {
+    var delta;
 
-    var geo_rose = {
-        e:[-1,0], w:[1,0],
-        s:[0,1], n:[0,1]
+    if (this.geo_rose[dir] == undefined){
+        throw ping.Exception("I don't know how to go " + dir);
     }
 
+    delta = this.geo_rose[dir];
+    index = ping.Math.c2i(this.x + delta.x, this.y + delta.y );
+
+    return this.parent.elements[index] || false;
 }
 
 
