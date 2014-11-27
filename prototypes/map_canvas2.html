@@ -41,18 +41,21 @@
 
         (function(){
 
-            var my_map = new GameMap(fakeMap),
+            var my_map = new GameMap(10,10),
                 canvas_map = document.getElementById("canvas_map"),
                 ctx_map = canvas_map.getContext("2d"),
+
                 canvas_view = document.getElementById("viewport"),
                 ctx_view = canvas_view.getContext("2d");
-                game_cols = fakeMap.cols,
-                game_rows = fakeMap.rows,
+                game_cols = my_map.width,
+                game_rows = my_map.height,
                 map_scalex = canvas_map.width / game_cols,
                 map_scaley = canvas_map.height / game_rows,
                 view_scalex = canvas_view.width / game_cols,
                 view_scaley = canvas_view.height / game_rows,
-                max_x = 2, max_y = 2,
+                //How many tiles should we show?
+                viewport_width = 3,
+                viewport_height = 3, //This is 3 adjusted to count from 0
                 player = {
 
                     x: 0,
@@ -72,8 +75,8 @@
                     map_scaley: map_scaley,
                     view_scalex: view_scalex,
                     view_scaley: view_scaley,
-                    max_x: max_x,
-                    max_y: max_y,
+                    viewport_width: viewport_width,
+                    viewport_height: viewport_height,
                     player: player
                 });
                 ping.Lib.initInput();
@@ -95,7 +98,6 @@
                 }
 
                 function redrawView() {
-                    console.log("player", player);
                     clearView();
 
                     //Player should not be out of bounds
