@@ -90,8 +90,8 @@
                     //Player should not be out of bounds
                     player.x = Math.max(0, player.x);
                     player.y = Math.max(0, player.y);
-                    player.x = Math.min(game_cols, player.x);
-                    player.y = Math.min(game_rows, player.y);
+                    player.x = Math.min(game_cols-1, player.x);
+                    player.y = Math.min(game_rows-1, player.y);
 
                     var tiles = my_map.grid.findBox({
                             x:Math.min(2, player.x),
@@ -102,7 +102,14 @@
                         vbox_width = ctx_view.canvas.width / 3,
                         vbox_height = ctx_view.canvas.height / 3;
 
-                    console.log(84, tiles.length, player);
+                    console.log(tiles.length, player,
+                        {
+                            x:Math.min(2, player.x),
+                            y:Math.min(2, player.y),
+                            sx:2,
+                            sy:2
+                        }
+                    );
                     ctx_view.save();
 
 
@@ -110,13 +117,43 @@
                         ctx_view.beginPath();
                         ctx_view.fillStyle = tiles[i].fillStyle;
                         ctx_view.fillRect(
-                            (tiles[i].x - player.x) * vbox_width,
-                            (tiles[i].y - player.y) * vbox_height,
+                            (tiles[i].x - Math.min(2, player.x)) * vbox_width,
+                            (tiles[i].y - Math.min(2, player.y)) * vbox_height,
                             vbox_width,
                             vbox_height
                         );
                         ctx_view.closePath();
                     }
+                    ctx_view.restore();
+
+                    //Draw the player now
+                    var wtf = {
+                        x: (player.x * vbox_width) + vbox_width/2,
+                        y: (player.y * vbox_height) + vbox_height/2,
+                        cw: ctx_view.canvas.width,
+                        ch: ctx_view.canvas.height,
+                        vw: vbox_width,
+                        vh: vbox_height
+                    };
+                    ctx_view.save();
+                    ctx_view.beginPath();
+                    ctx_view.arc(
+                        wtf.x,
+                        wtf.y,
+                        13,
+                        0,
+                        Math.PI * 2,
+                        1
+                    );
+                    console.log(player, wtf);
+
+
+                    ctx_view.fillStyle = "white";
+                    ctx_view.fill();
+                    ctx_view.restore();
+
+
+
 
 
 
@@ -158,29 +195,7 @@
 
 
             my_map.render(ctx_map);
-
-            ctx_view.beginPath();
-            //my_map.render(ctx_view, player.x, player.y, 1, 1);
-            var tiles = my_map.grid.findBox({x:0, y:0 , sx: 2, sy: 2}),
-                low_x, low_y, adj_x, adj_y,
-                cheight = ctx_view.canvas.height,
-                vHeight = cheight / 3,
-
-                cwidth = ctx_view.canvas.width,
-                vWidth = cwidth / 3;
-
-            ctx_view.save();
-
-            for (var a = 0; a < tiles.length; a++) {
-                var tile = tiles[a];
-                ctx_view.beginPath();
-                ctx_view.fillStyle = tile.fillStyle;
-                ctx_view.fillRect(tile.x * vWidth, tile.y * vHeight, vWidth, vHeight);
-                ctx_view.closePath();
-            }
-
-
-            ctx_view.restore();
+            redrawView();
 
             gameLoop();
 
