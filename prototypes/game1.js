@@ -21,6 +21,18 @@ GameTile = function(col, row, parent, fillStyle, index) {
 
     this.parent = parent;
     this.index = index;
+
+    this.walls = {
+        e:1, w:1, s:1, n:1
+    };
+    this.neighbors = {};
+
+    this.geo_rose = {
+        e: {x: 1, y: 0},
+        w: {x: -1, y: 0},
+        s: {x: 0, y: 1},
+        n: {x: 0, y: -1}
+    }
 }
 
 
