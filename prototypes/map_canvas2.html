@@ -83,6 +83,16 @@
                     ctx_view.closePath();
                 }
 
+                //point this in ping
+                function clamp(z, min, max) {
+                    if (z < min) {
+                        return min;
+                    } else if (z > max){
+                        return max;
+                    }
+                    return z;
+                }
+
                 function redrawView() {
                     console.log("player", player);
                     clearView();
