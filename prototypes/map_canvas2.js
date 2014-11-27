@@ -47,8 +47,8 @@ GameMap = function(max_width, max_height) {
             index += 1
         }
     }
-    debug = this.grid.getAll();
-    console.log(this.height * this.width, debug.length, debug.length == this.height * this.width);
+    //debug = this.grid.getAll();
+    //console.log(this.height * this.width, debug.length, debug.length == this.height * this.width);
 }
 
 GameMap.prototype.render = function(ctx, offsetx, offsety, limit_x, limit_y) {
