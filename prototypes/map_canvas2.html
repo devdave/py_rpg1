@@ -5,13 +5,13 @@
         <style>
             #canvas_map {
                 border: solid thin black;
-                width: 500px;
-                height: 300px;
+                width: 20%;
+                /*height: 100px;*/
             }
             #viewport {
                 border: solid thin black;
-                width: 100px;
-                height: 100px;
+                width: 70%;
+                /*height: 300px;*/
             }
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -21,8 +21,11 @@
 
     </head>
     <body>
-        <canvas id="viewport"></canvas>
-        <canvas id="canvas_map"></canvas>
+        <div id="contents">
+            <canvas style="float:left" id="viewport"></canvas>
+            <canvas style="float:left" id="canvas_map"></canvas>
+        </div>
+        <br style="clear:left">
 
         <div id="controls">
             <button name="go" value="up">up</button>
@@ -239,6 +242,10 @@
                 clearInterval(intervalId);
             })
 
+            $("#canvas_map").height( $("#canvas_map").width * 2.03);
+            $("#viewport").height($("#viewport").width * 2.03);
+            my_map.render(ctx_map);
+            gameLoop(0,0);
 
         })();
     </script>
