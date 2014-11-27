@@ -26,15 +26,22 @@ $x = 7 - ($y*3) == 1
 
 */
 ping.Math.c2i = function(x,y, sw, sh) {
-    return (x * sw) + y;
-}
+                    return (x * sw) + y;
+                }
 
 ping.Math.i2c = function(i, sw, sh) {
-    var x = Math.floor(i/sw),
-        y = i - (x*sh);
-    return [x, y];
-}
+                    var x = Math.floor(i/sw),
+                        y = i - (x*sh);
+                    return [x, y];
+                }
 
-//function(x, y, width, height) {
-//
-//}
+ping.Math.clamp = function(z, min, max) {
+                    if (z < min) {
+                        return min;
+                    } else if (z > max){
+                        return max;
+                    }
+                    return z;
+                }
+
+
