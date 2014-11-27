@@ -97,21 +97,25 @@ GameMap = function(max_width, max_height) {
     this.grid = ping.QuadrantFactory(this.width, this.height);
     this.elements = [];
 
-    var colors = ["red","blue","green","pink", "orange"],
-        row, col, myColor, debug, index = 0;
+    var row, col, myColor, debug, index = 0;
 
-    for (row = 0; row < this.height; row++) {
-        for(col = 0; col < this.width; col++){
-            myColor = colors[Math.floor(Math.random() * colors.length)];
-            var tile = new GameTile(col, row, parent, myColor, index);
+    for(col = 0; col < this.width; col++){
+        for (row = 0; row < this.height; row++) {
+
+            myColor = "black";
+            var tile = new GameTile(col, row, this, myColor, index);
             this.grid.add(tile);
             this.elements.push(tile);
             index += 1
         }
     }
+    for(var i = 0; i < this.elements.length; i++){
+        this.elements[i].findNeighbors();
+    }
     //debug = this.grid.getAll();
     //console.log(this.height * this.width, debug.length, debug.length == this.height * this.width);
 }
+
 
 GameMap.prototype.render = function(ctx, offsetx, offsety, limit_x, limit_y) {
     "use strict";
@@ -136,11 +140,116 @@ GameMap.prototype.render = function(ctx, offsetx, offsety, limit_x, limit_y) {
 
     for( var i = 0; i < my_elements.length; i++) {
         ctx.beginPath();
-        my_elements[i].render(ctx, scale_x, scale_y);
-        ctx.fillStyle = my_elements[i].fillStyle;
-        ctx.stroke();
-        ctx.fill();
+        drawCell(ctx, my_elements[i], scale_x, scale_y);
+        //my_elements[i].render(ctx, scale_x, scale_y);
+        //ctx.fillStyle = my_elements[i].fillStyle;
+        //ctx.stroke();
+        //ctx.fill();
         ctx.closePath;
     }
+
+}
+
+/**
+*Draw the sides of a cell
+*
+* @param {nsIDOMCanvasRenderingContext2D} ctx target to draw too
+* @param {GameTile} cell
+* @param {number} cell.x start of cell
+* @param {number} cell.y start of cell
+* @param {number} cell.width
+* @param {number} cell.height
+* @param {boolean} cell.east has east wall
+* @param {boolean} cell.w
+* @param {boolean} cell.n
+* @param {boolean} cell.s
+  @param {number} scale_x
+  @param {number scale_y
+  @param {Object} adj
+  @param {number} adj.x The real x coord
+  @param {number} adj.y The real y coord
+*/
+function drawCell(ctx, cell, scale_x, scale_y, adj) {
+    "use strict";
+
+    ctx.save();
+    ctx.beginPath();
+
+    var dirs = ['e','w','n','s'],
+        t,p,dir,
+        adj_x = adj ? adj.x :  Math.floor(cell.x * scale_x),
+        adj_y = adj ? adj.y :  Math.floor(cell.y * scale_y);
+
+    scale_x = Math.floor(scale_x);
+    scale_y = Math.floor(scale_y);
+
+    ctx.fillStyle = cell.fillStyle;
+    ctx.fillRect(adj_x, adj_y, scale_x, scale_y);
+
+
+    ctx.save();
+    ctx.strokeStyle = "white";
+    //Shifting off makes the lines "crisper"
+    ctx.translate(0.5,0.5);
+
+
+    for(dir in cell.walls) {
+        if (!cell.walls.hasOwnProperty(dir)) continue;
+
+        ctx.beginPath();
+
+
+        switch (dir) {
+            case 'n':
+                //origin to far upper right
+                ctx.moveTo(
+                    adj_x,
+                    adj_y
+                );
+                ctx.lineTo(
+                    adj_x + scale_x,
+                    adj_y
+                );
+                break;
+            case 's':
+                //bottom left to bottom right
+                ctx.moveTo(
+                    adj_x,
+                    adj_y + scale_y
+                );
+                ctx.lineTo(
+                    adj_x + scale_x,
+                    adj_y + scale_y );
+                break;
+            case 'w':
+                //origin to bottom left
+                ctx.moveTo(
+                    adj_x,
+                    adj_y
+                );
+                ctx.lineTo(
+                    adj_x,
+                    adj_y + scale_y
+                );
+                break;
+            case 'e':
+                //far right to bottom right
+                ctx.moveTo(
+                    adj_x + scale_x,
+                    adj_y
+                );
+                ctx.lineTo(
+                    adj_x + scale_x,
+                    adj_y + scale_y
+                );
+                break;
+        }
+
+
+        ctx.closePath();
+        ctx.stroke();
+    }
+    ctx.closePath();
+    ctx.restore();
 
 }

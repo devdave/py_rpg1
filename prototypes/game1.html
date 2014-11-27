@@ -16,8 +16,8 @@
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <!--<script src="./p2_fake_map.js"></script>-->
+        <script src="./ping_js/ping.debug.js"></script>
         <script src="./game1.js"></script>
-        <script src="./ping_js/ping.js"></script>
 
     </head>
     <body>
@@ -43,6 +43,7 @@
 
 
         (function(){
+            var my_map = new GameMap(10,10);
 
             var my_map = new GameMap(10,10),
                 canvas_map = document.getElementById("canvas_map"),
@@ -77,82 +78,7 @@
                     ctx_view.closePath();
                 }
 
-                //point this in ping
-                function clamp(z, min, max) {
-                    if (z < min) {
-                        return min;
-                    } else if (z > max){
-                        return max;
-                    }
-                    return z;
-                }
-                /**
-                *Draw the sides of a cell
-                *
-                * @param {nsIDOMCanvasRenderingContext2D} ctx target to draw too
-                * @param {Object} cell
-                * @param {number} cell.x start of cell
-                * @param {number} cell.y start of cell
-                * @param {number} cell.width
-                * @param {number} cell.height
-                * @param {boolean} cell.east has east wall
-                * @param {boolean} cell.w
-                * @param {boolean} cell.n
-                * @param {boolean} cell.s
-                */
-                function drawCell(ctx, cell) {
-                    "use strict";
 
-                    var dirs = ['e','w','n','s'],
-                        t,p;
-                    //For development only
-                    for(p = 0; p < dirs.length; p++) {
-                        cell[dirs[p]] = 1;
-                    }
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.fillStyle = "black";
-                    ctx.fillRect(cell.x, cell.y, cell.x + cell.width, cell.y + cell.height)
-                    ctx.closePath();
-                    ctx.restore();
-
-                    ctx.save();
-                    for(t = 0; t < dirs.length; t++) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = "blue";
-                        switch (dirs[t]) {
-                            case 'n':
-                                if (!cell[dirs[t]]) break;
-                                //origin to far upper right
-                                ctx.moveTo(cell.x, cell.y);
-                                ctx.lineTo(cell.x + cell.width, cell.y);
-                                break;
-                            case 's':
-                                if (!cell[dirs[t]]) break;
-                                //bottom left to bottom right
-                                ctx.moveTo(cell.x, cell.y + cell.height);
-                                ctx.lineTo(cell.x + cell.width, cell.y + cell.height);
-                                break;
-                            case 'w':
-                                if (!cell[dirs[t]]) break;
-                                //origin to bottom left
-                                ctx.moveTo(cell.x, cell.y);
-                                ctx.lineTo(cell.x, cell.y + cell.height);
-                                break;
-                            case 'e':
-                                if (!cell[dirs[t]]) break;
-                                //far right to bottom right
-                                ctx.moveTo(cell.x + cell.width, cell.y);
-                                ctx.lineTo(cell.x + cell.width, cell.y + cell.height);
-                                break;
-                        }
-                        //ctx.strokeStyle = "white";
-                        ctx.stroke();
-                        ctx.closePath();
-                    }
-                    ctx.restore();
-
-                }
 
                 function redrawView() {
                     clearView();
@@ -191,13 +117,26 @@
                         //    vbox_height
                         //);
                         //ctx_view.closePath();
+                        console.log(
+                            [
+                                (tiles[i].x - clamp(player.x, 0, my_map.width  - viewport_width )) * vbox_width,
+                                (tiles[i].y - clamp(player.y, 0, my_map.height - viewport_height)) * vbox_height
+                            ]);
                         drawCell(ctx_view,
-                        {
-                            x: (tiles[i].x - clamp(player.x, 0, my_map.width  - viewport_width )) * vbox_width,
-                            y: (tiles[i].y - clamp(player.y, 0, my_map.height - viewport_height)) * vbox_height,
-                            width: vbox_width,
-                            height: vbox_height
-                        });
+                            tiles[i],
+                            vbox_width,
+                            vbox_height,
+                            {
+                                x: (tiles[i].x - clamp(player.x, 0, my_map.width  - viewport_width )) * vbox_width,
+                                y: (tiles[i].y - clamp(player.y, 0, my_map.height - viewport_height)) * vbox_height
+                            }
+                        );
+                        //{
+                        //    x: (tiles[i].x - clamp(player.x, 0, my_map.width  - viewport_width )) * vbox_width,
+                        //    y: (tiles[i].y - clamp(player.y, 0, my_map.height - viewport_height)) * vbox_height,
+                        //    width: vbox_width,
+                        //    height: vbox_height
+                        //});
 
                     }
                     ctx_view.restore();
