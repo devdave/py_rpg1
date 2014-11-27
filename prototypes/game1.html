@@ -1,0 +1,339 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Game prototype 1</title>
+        <style>
+            #canvas_map {
+                border: solid thin black;
+                width: 20%;
+                /*height: 100px;*/
+            }
+            #viewport {
+                border: solid thin black;
+                width: 70%;
+                /*height: 300px;*/
+            }
+        </style>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <!--<script src="./p2_fake_map.js"></script>-->
+        <script src="./game1.js"></script>
+        <script src="./ping_js/ping.js"></script>
+
+    </head>
+    <body>
+        <div id="contents">
+            <canvas style="float:left" id="viewport"></canvas>
+            <canvas style="float:left" id="canvas_map"></canvas>
+        </div>
+        <br style="clear:left">
+
+        <div id="controls">
+            <button name="go" value="up">up</button>
+            <button name="go" value="north">north</button>
+            <button name="go" value="down">down</button>
+            <br>
+            <button name="go" value="west">west</button>
+            <button name="go" value="south">south</button>
+            <button name="go" value="east">east</button>
+        </div>
+    </body>
+
+
+    <script>
+
+
+        (function(){
+
+            var my_map = new GameMap(10,10),
+                canvas_map = document.getElementById("canvas_map"),
+                ctx_map = canvas_map.getContext("2d"),
+
+                canvas_view = document.getElementById("viewport"),
+                ctx_view = canvas_view.getContext("2d");
+                game_cols = my_map.width,
+                game_rows = my_map.height,
+                map_scalex = canvas_map.width / game_cols,
+                map_scaley = canvas_map.height / game_rows,
+                view_scalex = canvas_view.width / game_cols,
+                view_scaley = canvas_view.height / game_rows,
+                //How many tiles should we show?
+                viewport_width = 3,
+                viewport_height = 3, //This is 3 adjusted to count from 0
+                player = {
+
+                    x: Math.floor(clamp(Math.random() * my_map.width,0,my_map.width)),
+                    y: Math.floor(clamp(Math.random() * my_map.height,0,my_map.height))
+
+                };
+
+                ctx_map.translate(0.5,0.5);
+                ctx_view.translate(0.5,0.5);
+
+                ping.Lib.initInput();
+
+                function clearView() {
+                    ctx_view.beginPath();
+                    ctx_view.clearAll();
+                    ctx_view.closePath();
+                }
+
+                //point this in ping
+                function clamp(z, min, max) {
+                    if (z < min) {
+                        return min;
+                    } else if (z > max){
+                        return max;
+                    }
+                    return z;
+                }
+                /**
+                *Draw the sides of a cell
+                *
+                * @param {nsIDOMCanvasRenderingContext2D} ctx target to draw too
+                * @param {Object} cell
+                * @param {number} cell.x start of cell
+                * @param {number} cell.y start of cell
+                * @param {number} cell.width
+                * @param {number} cell.height
+                * @param {boolean} cell.east has east wall
+                * @param {boolean} cell.w
+                * @param {boolean} cell.n
+                * @param {boolean} cell.s
+                */
+                function drawCell(ctx, cell) {
+                    "use strict";
+
+                    var dirs = ['e','w','n','s'],
+                        t,p;
+                    //For development only
+                    for(p = 0; p < dirs.length; p++) {
+                        cell[dirs[p]] = 1;
+                    }
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(cell.x, cell.y, cell.x + cell.width, cell.y + cell.height)
+                    ctx.closePath();
+                    ctx.restore();
+
+                    ctx.save();
+                    for(t = 0; t < dirs.length; t++) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = "blue";
+                        switch (dirs[t]) {
+                            case 'n':
+                                if (!cell[dirs[t]]) break;
+                                //origin to far upper right
+                                ctx.moveTo(cell.x, cell.y);
+                                ctx.lineTo(cell.x + cell.width, cell.y);
+                                break;
+                            case 's':
+                                if (!cell[dirs[t]]) break;
+                                //bottom left to bottom right
+                                ctx.moveTo(cell.x, cell.y + cell.height);
+                                ctx.lineTo(cell.x + cell.width, cell.y + cell.height);
+                                break;
+                            case 'w':
+                                if (!cell[dirs[t]]) break;
+                                //origin to bottom left
+                                ctx.moveTo(cell.x, cell.y);
+                                ctx.lineTo(cell.x, cell.y + cell.height);
+                                break;
+                            case 'e':
+                                if (!cell[dirs[t]]) break;
+                                //far right to bottom right
+                                ctx.moveTo(cell.x + cell.width, cell.y);
+                                ctx.lineTo(cell.x + cell.width, cell.y + cell.height);
+                                break;
+                        }
+                        //ctx.strokeStyle = "white";
+                        ctx.stroke();
+                        ctx.closePath();
+                    }
+                    ctx.restore();
+
+                }
+
+                function redrawView() {
+                    clearView();
+
+                    //Player should not be out of bounds
+                    player.x = Math.max(0, player.x);
+                    player.y = Math.max(0, player.y);
+                    player.x = Math.min(game_cols-1, player.x);
+                    player.y = Math.min(game_rows-1, player.y);
+
+
+
+                    var tiles = my_map.grid.findBox({
+                            x: clamp(player.x, 0, my_map.width - viewport_width),
+                            y: clamp(player.y, 0, my_map.height - viewport_height),//Math.min(2, player.y),
+                            sx:2,
+                            sy:2
+                        }),
+                        vbox_width = ctx_view.canvas.width / 3,
+                        vbox_height = ctx_view.canvas.height / 3;
+
+                    ctx_view.save();
+
+                    tiles.sort(function(a,b){
+                        return a.x - b.x;
+                    });
+
+
+                    for(var i = 0; i < tiles.length; i++){
+                        //ctx_view.beginPath();
+                        //ctx_view.fillStyle = tiles[i].fillStyle;
+                        //ctx_view.fillRect(
+                        //    (tiles[i].x - clamp(player.x, 0, my_map.width  - viewport_width )) * vbox_width,
+                        //    (tiles[i].y - clamp(player.y, 0, my_map.height - viewport_height)) * vbox_height,
+                        //    vbox_width,
+                        //    vbox_height
+                        //);
+                        //ctx_view.closePath();
+                        drawCell(ctx_view,
+                        {
+                            x: (tiles[i].x - clamp(player.x, 0, my_map.width  - viewport_width )) * vbox_width,
+                            y: (tiles[i].y - clamp(player.y, 0, my_map.height - viewport_height)) * vbox_height,
+                            width: vbox_width,
+                            height: vbox_height
+                        });
+
+                    }
+                    ctx_view.restore();
+
+                    //Adjust the player object so it moves with the view
+                    //Without this, moving down or right would make the
+                    //object look like it jumped 2 places!
+                    var camera_player = {
+                        x: player.x < game_cols-2 ? player.x - 2 : player.x,
+                        y: player.y < game_rows-2 ? player.y - 2 : player.y
+                    };
+                    if (player.x > 0 && player.x < game_cols - 2 ) {
+                        camera_player.x = 1;
+                    }
+                    if (player.y > 0 && player.y < game_rows - 2) {
+                        camera_player.y = 1;
+                    }
+                    camera_player.x = clamp(camera_player.x, 0, game_cols);
+                    camera_player.y = clamp(camera_player.y, 0, game_rows);
+                    //Draw the player now
+                    var camera = {
+
+                        x: clamp(
+                            (camera_player.x * vbox_width) + vbox_width/2,
+                            vbox_width/2,
+                            ctx_view.canvas.width - vbox_width/2),
+
+                        y: clamp(
+                            (camera_player.y * vbox_height) + vbox_height/2,
+                            vbox_height/2,
+                            ctx_view.canvas.height - vbox_height/2),
+
+                        cw: ctx_view.canvas.width,
+                        ch: ctx_view.canvas.height,
+                        vw: vbox_width,
+                        vh: vbox_height
+                    };
+
+                    ctx_view.save();
+                    ctx_view.beginPath();
+                    ctx_view.arc(
+                        camera.x,
+                        camera.y,
+                        13,
+                        0,
+                        Math.PI * 2,
+                        1
+                    );
+
+                    ctx_view.fillStyle = "white";
+                    ctx_view.fill();
+                    ctx_view.restore();
+
+                    console.log(player, camera, camera_player);
+
+                }
+
+                function renderMap(ctx, grid, my_player) {
+                        //Figure out how wide and tall are elements are
+                    var tile_sx = ctx.canvas.width / grid.width,
+                        tile_sy = ctx.canvas.height / grid.height,
+                        px = my_player.x * tile_sx + (tile_sx / 2),
+                        py = my_player.y * tile_sy + (tile_sy / 2),
+                        x = clamp(px, 0, ctx.canvas.width - (tile_sx / 2)) ,
+                        y = clamp(py, 0, ctx.canvas.height - (tile_sy / 2)),
+                        start = (Math.PI/180) * 0,
+                        end   = (Math.PI/180) * 360;
+
+                    ctx.save()
+                    grid.render(ctx);
+                    ctx.beginPath();
+                    ctx.fillStyle = "white";
+
+                    ctx.arc(x,y,5, start, end);
+                    ctx.fill();
+                    ctx.closePath();
+                    ctx.restore();
+
+                }
+
+
+                function gameLoop(move_x, move_y) {
+                    "use strict";
+
+                    player.x = clamp(player.x + move_x, 0, my_map.width);
+                    player.y = clamp(player.y + move_y, 0, my_map.height);
+
+                    redrawView();
+                    renderMap(ctx_map, my_map, player );
+
+                    //setTimeout(gameLoop, 150);
+
+                }
+
+
+
+
+
+            function moveIt(direction){
+                switch(direction) {
+                    case "east":
+                        gameLoop(1,0);
+                        break;
+                    case "west":
+                        gameLoop(-1,0);
+                        break;
+                    case "north":
+                        gameLoop(0,-1);
+                        break;
+                    case "south":
+                        gameLoop(0,1);
+                        break;
+                    default:
+                        alert("I don't know " + $(this).val)
+                }
+            }
+
+            var intervalId;
+            $("#controls button").mousedown(function(evt){
+                var dir =$(this).val();
+                intervalId = setInterval(function(){
+                    moveIt(dir);
+                },100);
+            })
+
+            $("#controls button").mouseup(function(){
+                clearInterval(intervalId);
+            })
+
+            $("#canvas_map").height( $("#canvas_map").width * 2.03);
+            $("#viewport").height($("#viewport").width * 2.03);
+            my_map.render(ctx_map);
+            gameLoop(0,0);
+
+        })();
+    </script>
+
+
+</html>
