@@ -6,7 +6,7 @@
             #canvas_map {
                 border: solid thin black;
                 width: 500px;
-                height: 500px;
+                height: 300px;
             }
             #viewport {
                 border: solid thin black;
@@ -21,16 +21,17 @@
 
     </head>
     <body>
-        <canvas id="canvas_map"></canvas>
         <canvas id="viewport"></canvas>
+        <canvas id="canvas_map"></canvas>
+
         <div id="controls">
-            <button name="go" value="">up</button>
-            <button name="go" value="">north</button>
-            <button name="go" value="">down</button>
+            <button name="go" value="up">up</button>
+            <button name="go" value="north">north</button>
+            <button name="go" value="down">down</button>
             <br>
-            <button name="go" value="">west</button>
-            <button name="go" value="">south</button>
-            <button name="go" value="">east</button>
+            <button name="go" value="west">west</button>
+            <button name="go" value="south">south</button>
+            <button name="go" value="east">east</button>
         </div>
     </body>
 
@@ -40,18 +41,21 @@
 
         (function(){
 
-            var my_map = new GameMap(fakeMap),
+            var my_map = new GameMap(10,10),
                 canvas_map = document.getElementById("canvas_map"),
                 ctx_map = canvas_map.getContext("2d"),
+
                 canvas_view = document.getElementById("viewport"),
                 ctx_view = canvas_view.getContext("2d");
-                game_cols = fakeMap.cols,
-                game_rows = fakeMap.rows,
+                game_cols = my_map.width,
+                game_rows = my_map.height,
                 map_scalex = canvas_map.width / game_cols,
                 map_scaley = canvas_map.height / game_rows,
                 view_scalex = canvas_view.width / game_cols,
                 view_scaley = canvas_view.height / game_rows,
-                max_x = 2, max_y = 2,
+                //How many tiles should we show?
+                viewport_width = 3,
+                viewport_height = 3, //This is 3 adjusted to count from 0
                 player = {
 
                     x: 0,
@@ -71,8 +75,8 @@
                     map_scaley: map_scaley,
                     view_scalex: view_scalex,
                     view_scaley: view_scaley,
-                    max_x: max_x,
-                    max_y: max_y,
+                    viewport_width: viewport_width,
+                    viewport_height: viewport_height,
                     player: player
                 });
                 ping.Lib.initInput();
@@ -94,7 +98,6 @@
                 }
 
                 function redrawView() {
-                    console.log("player", player);
                     clearView();
 
                     //Player should not be out of bounds
@@ -106,31 +109,27 @@
 
 
                     var tiles = my_map.grid.findBox({
-                            x: Math.min(2, player.x),
-                            y: Math.min(2, player.y),
+                            x: clamp(player.x, 0, my_map.width - viewport_width),
+                            y: clamp(player.y, 0, my_map.height - viewport_height),//Math.min(2, player.y),
                             sx:2,
                             sy:2
                         }),
                         vbox_width = ctx_view.canvas.width / 3,
                         vbox_height = ctx_view.canvas.height / 3;
 
-                    console.log(tiles.length, player,
-                        {
-                            x:Math.min(2, player.x),
-                            y:Math.min(2, player.y),
-                            sx:2,
-                            sy:2
-                        }
-                    );
                     ctx_view.save();
+
+                    tiles.sort(function(a,b){
+                        return a.x - b.x;
+                    });
 
 
                     for(var i = 0; i < tiles.length; i++){
                         ctx_view.beginPath();
                         ctx_view.fillStyle = tiles[i].fillStyle;
                         ctx_view.fillRect(
-                            (tiles[i].x - Math.min(2, player.x)) * vbox_width,
-                            (tiles[i].y - Math.min(2, player.y)) * vbox_height,
+                            (tiles[i].x - clamp(player.x, 0, my_map.width  - viewport_width )) * vbox_width,
+                            (tiles[i].y - clamp(player.y, 0, my_map.height - viewport_height)) * vbox_height,
                             vbox_width,
                             vbox_height
                         );
@@ -142,19 +141,27 @@
                     //Without this, moving down or right would make the
                     //object look like it jumped 2 places!
                     var camera_player = {
-                        px: player.x < game_cols ? player.x - 1 : player.x,
-                        py: player.y < game_rows ? player.y - 1 : player.y
+                        x: player.x < game_cols-2 ? player.x - 2 : player.x,
+                        y: player.y < game_rows-2 ? player.y - 2 : player.y
                     };
+                    if (player.x > 0 && player.x < game_cols - 2 ) {
+                        camera_player.x = 1;
+                    }
+                    if (player.y > 0 && player.y < game_rows - 2) {
+                        camera_player.y = 1;
+                    }
+                    camera_player.x = clamp(camera_player.x, 0, game_cols);
+                    camera_player.y = clamp(camera_player.y, 0, game_rows);
                     //Draw the player now
                     var camera = {
 
                         x: clamp(
-                            (camera_player.px * vbox_width) + vbox_width/2,
+                            (camera_player.x * vbox_width) + vbox_width/2,
                             vbox_width/2,
                             ctx_view.canvas.width - vbox_width/2),
 
                         y: clamp(
-                            (player.y * vbox_height) + vbox_height/2,
+                            (camera_player.y * vbox_height) + vbox_height/2,
                             vbox_height/2,
                             ctx_view.canvas.height - vbox_height/2),
 
@@ -174,59 +181,52 @@
                         Math.PI * 2,
                         1
                     );
-                    console.log(player, camera);
-
 
                     ctx_view.fillStyle = "white";
                     ctx_view.fill();
                     ctx_view.restore();
 
-
-
-
-
+                    console.log(player, camera, camera_player);
 
                 }
 
 
-                function gameLoop() {
+                function gameLoop(move_x, move_y) {
                     "use strict";
-                    var tiles;
 
-                    if (ping.Lib.Input.state.U) {
-                        player.y -= 1
-                        update = true;
-                    }
-                    else if (ping.Lib.Input.state.D) {
-                        player.y += 1;
-                        update = true;
-                    }
+                    player.x = clamp(player.x + move_x, 0, my_map.width);
+                    player.y = clamp(player.y + move_y, 0, my_map.height);
+                    redrawView();
 
-                    if (ping.Lib.Input.state.L) {
-                        player.x = Math.max(0, player.x -1);
-                        update = true;
-                    }
-                    else if (ping.Lib.Input.state.R) {
-                        player.x = Math.min(fakeMap.cols, player.x + 1);
-                        update = true;
-                    }
-
-
-                    if (update) {
-                        redrawView();
-                        update = false;
-                    }
-
-                    setTimeout(gameLoop, 150);
+                    //setTimeout(gameLoop, 150);
 
                 }
 
 
 
             my_map.render(ctx_map);
-            redrawView();
 
-            gameLoop();
+            gameLoop(0,0);
+
+            $("#controls button").click(function(ev) {
+
+                switch($(this).val()) {
+                    case "east":
+                        gameLoop(1,0);
+                        break;
+                    case "west":
+                        gameLoop(-1,0);
+                        break;
+                    case "north":
+                        gameLoop(0,-1);
+                        break;
+                    case "south":
+                        gameLoop(0,1);
+                        break;
+                    default:
+                        alert("I don't know " + $(this).val)
+                }
+            });
 
 
 

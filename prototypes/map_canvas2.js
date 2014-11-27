@@ -27,11 +27,11 @@ GameTile.prototype.render = function(ctx, scale_x, scale_y) {
 }
 
 
-GameMap = function(map_data) {
+GameMap = function(max_width, max_height) {
     "use strict";
 
-    this.width = map_data.cols;
-    this.height = map_data.rows;
+    this.width = max_width;
+    this.height = max_height;
     this.grid = ping.QuadrantFactory(this.width, this.height);
     this.elements = [];
 
@@ -47,8 +47,8 @@ GameMap = function(map_data) {
             index += 1
         }
     }
-    debug = this.grid.getAll();
-    console.log(this.height * this.width, debug.length, debug.length == this.height * this.width);
+    //debug = this.grid.getAll();
+    //console.log(this.height * this.width, debug.length, debug.length == this.height * this.width);
 }
 
 GameMap.prototype.render = function(ctx, offsetx, offsety, limit_x, limit_y) {
