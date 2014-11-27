@@ -109,33 +109,43 @@
 
 
                     var tiles = my_map.grid.findBox({
-                            x: Math.min(2, player.x),
-                            y: Math.min(2, player.y),
+                            x: clamp(player.x, 0, my_map.width - viewport_width),
+                            y: clamp(player.y, 0, my_map.height - viewport_height),//Math.min(2, player.y),
                             sx:2,
                             sy:2
                         }),
                         vbox_width = ctx_view.canvas.width / 3,
                         vbox_height = ctx_view.canvas.height / 3;
 
-                    console.log(tiles.length, player,
-                        {
-                            x:Math.min(2, player.x),
-                            y:Math.min(2, player.y),
-                            sx:2,
-                            sy:2
-                        }
+                    console.log(
+                        tiles.length,
+                        [clamp(player.x, 0, my_map.width), clamp(player.y, 0, my_map.height) ]
                     );
+
                     ctx_view.save();
+
+                    tiles.sort(function(a,b){
+                        return a.x - b.x;
+                    });
 
 
                     for(var i = 0; i < tiles.length; i++){
                         ctx_view.beginPath();
                         ctx_view.fillStyle = tiles[i].fillStyle;
                         ctx_view.fillRect(
-                            (tiles[i].x - Math.min(2, player.x)) * vbox_width,
-                            (tiles[i].y - Math.min(2, player.y)) * vbox_height,
+                            (tiles[i].x - clamp(player.x, 0, my_map.width  - viewport_width )) * vbox_width,
+                            (tiles[i].y - clamp(player.y, 0, my_map.height - viewport_height)) * vbox_height,
                             vbox_width,
                             vbox_height
+                        );
+                        console.log(
+                            [player.x, player.y],
+                            [tiles[i].x, tiles[i].y],
+                            [Math.min(2, player.x), Math.min(2, player.y)],
+                            [
+                                (tiles[i].x - player.x) * vbox_width,
+                                (tiles[i].y - Math.min(2, player.y)) * vbox_height
+                            ]
                         );
                         ctx_view.closePath();
                     }
