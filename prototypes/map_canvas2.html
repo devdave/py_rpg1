@@ -208,9 +208,8 @@
 
             gameLoop(0,0);
 
-            $("#controls button").click(function(ev) {
-
-                switch($(this).val()) {
+            function moveIt(direction){
+                switch(direction) {
                     case "east":
                         gameLoop(1,0);
                         break;
@@ -226,8 +225,19 @@
                     default:
                         alert("I don't know " + $(this).val)
                 }
-            });
+            }
 
+            var intervalId;
+            $("#controls button").mousedown(function(evt){
+                var dir =$(this).val();
+                intervalId = setInterval(function(){
+                    moveIt(dir);
+                },100);
+            })
+
+            $("#controls button").mouseup(function(){
+                clearInterval(intervalId);
+            })
 
 
         })();
