@@ -103,9 +103,11 @@
                     player.x = Math.min(game_cols-1, player.x);
                     player.y = Math.min(game_rows-1, player.y);
 
+
+
                     var tiles = my_map.grid.findBox({
-                            x:Math.min(2, player.x),
-                            y:Math.min(2, player.y),
+                            x: Math.min(2, player.x),
+                            y: Math.min(2, player.y),
                             sx:2,
                             sy:2
                         }),
@@ -136,26 +138,43 @@
                     }
                     ctx_view.restore();
 
+                    //Adjust the player object so it moves with the view
+                    //Without this, moving down or right would make the
+                    //object look like it jumped 2 places!
+                    var camera_player = {
+                        px: player.x < game_cols ? player.x - 1 : player.x,
+                        py: player.y < game_rows ? player.y - 1 : player.y
+                    };
                     //Draw the player now
-                    var wtf = {
-                        x: (player.x * vbox_width) + vbox_width/2,
-                        y: (player.y * vbox_height) + vbox_height/2,
+                    var camera = {
+
+                        x: clamp(
+                            (camera_player.px * vbox_width) + vbox_width/2,
+                            vbox_width/2,
+                            ctx_view.canvas.width - vbox_width/2),
+
+                        y: clamp(
+                            (player.y * vbox_height) + vbox_height/2,
+                            vbox_height/2,
+                            ctx_view.canvas.height - vbox_height/2),
+
                         cw: ctx_view.canvas.width,
                         ch: ctx_view.canvas.height,
                         vw: vbox_width,
                         vh: vbox_height
                     };
+
                     ctx_view.save();
                     ctx_view.beginPath();
                     ctx_view.arc(
-                        wtf.x,
-                        wtf.y,
+                        camera.x,
+                        camera.y,
                         13,
                         0,
                         Math.PI * 2,
                         1
                     );
-                    console.log(player, wtf);
+                    console.log(player, camera);
 
 
                     ctx_view.fillStyle = "white";
