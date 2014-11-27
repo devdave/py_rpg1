@@ -1,12 +1,17 @@
 
+
+
+
+
+clamp = ping.Math.clamp;
+
+/**
+GameTile doesn't know the size of the canvas
+it's going to be so instead it knows what position it
+is on a grid.
+*/
 GameTile = function(col, row, parent, fillStyle, index) {
-    /**
-    GameTile doesn't know the size of the canvas
-    it's going to be so instead it knows what position it
-    is on a grid.
 
-
-    */
     this.x = col;
     this.y = row;
 
