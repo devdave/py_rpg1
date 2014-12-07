@@ -1,0 +1,255 @@
+<html>
+	<head>
+		<title>My first Three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js"></script>
+		<script>
+
+
+
+
+            //var camera = new THREE.PerspectiveCamera( 45,
+            //    window.innerWidth / window.innerHeight,
+            //    0.1,
+            //    1000
+            //);
+
+            function GameState() {
+                this.width = window.innerWidth,
+                this.height = window.innerHeight;
+
+                this.renderer = new THREE.WebGLRenderer();
+
+                this.renderer.setSize( this.width, this.height );
+                document.body.appendChild( this.renderer.domElement );
+
+                this.scene = new THREE.Scene();
+
+                this.scene.add( new THREE.AxisHelper( 10 ) );
+
+                this.build();
+            }
+
+            GameState.prototype.build = function() {
+                this.buildCamera();
+                this.drawWireGrid();
+                this.setLight();
+                this.buildGrid();
+            }
+
+
+
+            GameState.prototype.buildCamera = function() {
+                //this.camera = new THREE.OrthographicCamera(
+                //    this.width / - 2,
+                //    this.width / 2,
+                //    this.height / 2,
+                //    this.height / - 2,
+                //    .01,
+                //    1000 );
+
+                this.camera = new THREE.PerspectiveCamera(
+                    45,
+                    this.width / this.height,
+                    1,
+                    1000
+                );
+
+                this.camera.up = new THREE.Vector3(0,1,0);
+                this.camera.position.set(0,100,10);
+                this.camera.lookAt(this.scene.position);
+                this.scene.add( this.camera );
+
+
+
+            }
+
+
+
+
+            // grid
+            GameState.prototype.drawWireGrid = function () {
+                var geometry = new THREE.PlaneGeometry( 1000, 1000, 10, 10 );
+                var material = new THREE.MeshBasicMaterial(
+                    {
+                        wireframe: true,
+                        opacity: 0.5,
+                        transparent: true
+                    }
+                );
+
+                this.grid = new THREE.Mesh( geometry, material );
+                this.grid.rotation.order = 'YXZ';
+                this.grid.rotation.y = - Math.PI / 2;
+                this.grid.rotation.x = - Math.PI / 2;
+                this.scene.add( this.grid );
+            }
+
+
+
+            GameState.prototype.setLight = function() {
+                this.pointLight = new THREE.PointLight(0xFFFFFF);
+
+                // set its position
+                this.pointLight.position.x = 10;
+                this.pointLight.position.y = 50;
+                this.pointLight.position.z = 130;
+
+                // add to the scene
+                this.scene.add(this.pointLight);
+            }
+
+
+
+
+            GameState.prototype.buildGrid = function() {
+                var blackMaterial =
+                    new THREE.MeshLambertMaterial(
+                        {
+                            color: 0x00F00F
+                        }
+                    ),
+
+                    whiteMaterial =
+                    new THREE.MeshLambertMaterial(
+                        {
+                            color: 0xFFFFFF
+                        }
+                    ),
+
+                    geometry = new THREE.BoxGeometry( 50, 5, 50 ),
+                    adjustX = -50,
+                    adjustY = -50;
+
+                    this.gridMap = [];
+
+                    for(var col = 0; col < 10; col++){
+                        for(var row = 0; row < 10; row++){
+                            var myColor = (col + row) % 2 == 0
+                                ? whiteMaterial
+                                : blackMaterial;
+
+                            var cube = new THREE.Mesh( geometry, myColor );
+                            cube.position.z = (50 * col) + adjustX
+                            cube.position.x = (50 * row) + adjustY;
+                            cube.position.y = -10;
+                            this.scene.add(cube);
+                            this.gridMap.push(cube);
+                        }
+                    }
+
+            }
+
+
+
+
+            //camera.lookAt(grid.position);
+
+            function control(state) {
+
+                var keys = {
+                    up: false,
+                    down: false,
+                    left: false,
+                    right: false,
+                    q: false,
+                    e: false,
+                    w: false,
+                    s: false,
+                    a: false,
+                    d: false
+                },
+                step = 1;
+
+
+                state.adjust = function(){
+                    var changed = false;
+                    if (keys.up) {
+                        state.camera.translateY(+step);
+                        changed = true;
+                    }
+                    else if (keys.down) {
+                        state.camera.translateY(-step);;
+                        changed = true;
+                    }
+                    if (keys.left) {
+                        state.camera.translateX(-step);
+                        changed = true;
+                    }
+                    else if (keys.right) {
+                        state.camera.translateX(step);;
+                        changed = true;
+                    }
+
+                    if (keys.s) {
+                        state.camera.translateZ(step);
+                    }else if (keys.w) {
+                        state.camera.translateZ(-step);
+                    }
+
+                    if (changed) {
+                        console.log(this.camera.position);
+                        state.camera.updateProjectionMatrix();
+                        state.camera.lookAt(state.scene.position);
+                    }
+                }
+
+                window.addEventListener("keydown", function(evt){
+                    var myState = true;
+                    switch(event.keyCode){
+                        case 37: keys.left  = myState; break;
+                        case 38: keys.up    = myState; break;
+                        case 39: keys.right = myState; break;
+                        case 40: keys.down  = myState; break;
+                        case 65: keys.a     = myState; break;
+                        case 68: keys.d     = myState; break;
+                        case 83: keys.s     = myState; break;
+                        case 87: keys.w     = myState; break;
+                    }
+                })
+
+                window.addEventListener("keyup", function(evt) {
+                    var myState = false;
+                    switch(event.keyCode){
+                        case 37: keys.left  = myState; break;
+                        case 38: keys.up    = myState; break;
+                        case 39: keys.right = myState; break;
+                        case 40: keys.down  = myState; break;
+                        case 65: keys.a     = myState; break;
+                        case 68: keys.d     = myState; break;
+                        case 83: keys.s     = myState; break;
+                        case 87: keys.w     = myState; break;
+                    }
+                })
+
+            }
+
+
+
+            GameState.prototype.render = function() {
+                cam = {
+                    x: this.camera.x,
+                    y: this.camera.y,
+                    z: this.camera.z
+                }
+
+
+
+                requestAnimationFrame( this.render.bind(this) );
+                this.renderer.render( this.scene, this.camera );
+                this.adjust();
+
+            }
+
+            var myState = new GameState();
+            control(myState);
+
+            myState.render();
+		</script>
+	</body>
+</html>
